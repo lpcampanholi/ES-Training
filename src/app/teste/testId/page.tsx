@@ -3,12 +3,13 @@
 import { useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, ArrowRight, Clock, ImageIcon } from "lucide-react"
+import { ArrowLeft, ArrowRight, Clock } from "lucide-react"
 import Link from "next/link"
 import { Progress } from "@/components/ui/progress"
 import { getTestById, submitTest } from "@/services/api"
 import { useToast } from "@/hooks/use-toast"
 import { formatTime } from "@/lib/utils"
+import parse from "html-react-parser"
 
 export default function TestePage({
   params,
@@ -162,7 +163,7 @@ export default function TestePage({
         <h2 className="text-2xl font-bold text-slate-800 mb-6">Questão {currentQuestion + 1}</h2>
 
         <div className="mb-8">
-          <p className="text-slate-700 mb-6 leading-relaxed">{question.text}</p>
+          <div className="rich-text-content mb-6">{parse(question.text)}</div>
 
           {question.imageUrl && (
             <div className="flex justify-center mb-8">
@@ -171,14 +172,6 @@ export default function TestePage({
                 alt="Imagem da questão"
                 className="max-h-64 object-contain rounded-xl"
               />
-            </div>
-          )}
-
-          {!question.imageUrl && (
-            <div className="flex justify-center mb-8">
-              <div className="w-full max-w-md h-48 bg-slate-100 flex items-center justify-center rounded-xl">
-                <ImageIcon className="w-12 h-12 text-slate-400" />
-              </div>
             </div>
           )}
 

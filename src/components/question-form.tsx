@@ -6,9 +6,8 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
-import { ImagePlus } from "lucide-react"
+import { RichTextEditor } from "@/components/ui/rich-text-editor"
 
 const defaultOptions = [
   { id: "", text: "", isCorrect: false, order: "a" },
@@ -33,10 +32,10 @@ export default function QuestionForm({
     options: initialData?.options || defaultOptions,
   })
 
-  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleTextChange = (value: string) => {
     setFormData((prev) => ({
       ...prev,
-      text: e.target.value,
+      text: value,
     }))
   }
 
@@ -90,31 +89,12 @@ export default function QuestionForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-2">
-        <Label htmlFor="text">Enunciado da Questão</Label>
-        <Textarea
-          id="text"
+        <Label htmlFor="text">Enunciado</Label>
+        <RichTextEditor
           value={formData.text}
           onChange={handleTextChange}
-          placeholder="Digite o enunciado da questão"
-          rows={5}
-          required
+          placeholder="Digite o enunciado da questão..."
         />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="imageUrl">URL da Imagem (opcional)</Label>
-        <div className="flex gap-2">
-          <Input
-            id="imageUrl"
-            value={formData.imageUrl}
-            onChange={(e) => setFormData((prev) => ({ ...prev, imageUrl: e.target.value }))}
-            placeholder="https://exemplo.com/imagem.jpg"
-          />
-          <Button type="button" variant="outline" className="shrink-0">
-            <ImagePlus className="w-4 h-4 mr-2" />
-            Upload
-          </Button>
-        </div>
       </div>
 
       <div className="space-y-4">

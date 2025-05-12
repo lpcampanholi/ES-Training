@@ -7,9 +7,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft, Plus, Pencil, Trash2 } from "lucide-react"
 import Link from "next/link"
 import { useToast } from "@/hooks/use-toast"
-import QuestionItem from "@/components/admin/question-item"
+import QuestionItem from "@/components/question-item"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import QuestionForm from "@/components/admin/question-form"
+import QuestionForm from "@/components/question-form"
 
 export default function TestDetailPage({ params }: { params: { id: string } }) {
   const router = useRouter()
@@ -104,6 +104,39 @@ export default function TestDetailPage({ params }: { params: { id: string } }) {
       toast({
         title: "Erro",
         description: "Não foi possível adicionar a questão",
+        variant: "destructive",
+      })
+    }
+  }
+
+  const handleUpdateQuestion = async (questionId: string, questionData: any) => {
+    try {
+      const response = await fetch(`/api/questions/${questionId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(questionData),
+      })
+
+      if (!response.ok) {
+        throw new Error("Erro ao atualizar questão")
+      }
+
+      const updatedQuestion = await response.json()
+
+      setTest((prev: any) => ({
+        ...prev,
+        questions: prev.questions.map((q: any) => (q.id === questionId ? updatedQuestion : q)),
+      }))
+
+      toast({
+        title: "Questão atualizada com sucesso!",
+      })
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Não foi possível atualizar a questão",
         variant: "destructive",
       })
     }
@@ -238,6 +271,7 @@ export default function TestDetailPage({ params }: { params: { id: string } }) {
               question={question}
               index={index}
               onDelete={() => handleDeleteQuestion(question.id)}
+              onUpdate={handleUpdateQuestion}
             />
           ))}
         </div>

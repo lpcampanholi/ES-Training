@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Card, CardContent } from "@/components/ui/card"
 import { ArrowLeft, Sparkles, Zap, Trophy, Star } from "lucide-react"
-import { getTestsBySubject } from "@/services/api"
+import { getTestsBySubject } from "@/services/tests-service"
 
 export default function NivelPage({ params }: { params: { subject: string } }) {
   const [tests, setTests] = useState<any[]>([])
@@ -77,7 +77,7 @@ export default function NivelPage({ params }: { params: { subject: string } }) {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-gradient-to-b from-slate-50 to-slate-100">
       <div className="w-full max-w-4xl p-8 bg-white rounded-2xl shadow-sm">
-        <Link href="/" className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-6 transition-colors">
+        <Link href="/disciplinas" className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-6 transition-colors">
           <ArrowLeft className="w-4 h-4 mr-2" />
           Voltar
         </Link>

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardTitle } from "@/components/ui/card"
 import { DataTable } from "@/components/ui/data-table"
 import { Button } from "@/components/ui/button"
 import { Eye, Download } from "lucide-react"
@@ -130,18 +130,14 @@ export default function LeadsPage() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-slate-800">Leads</h1>
-        <Button onClick={handleExportCSV}>
-          <Download className="h-4 w-4 mr-2" />
-          Exportar CSV
-        </Button>
-      </div>
-
       <Card>
-        <CardHeader>
+        <div className="flex justify-between  items-center mx-6 mb-6 mt-4">
           <CardTitle>Lista de Leads</CardTitle>
-        </CardHeader>
+          <Button onClick={handleExportCSV}>
+            <Download className="h-4 w-4 mr-2" />
+            Exportar CSV
+          </Button>
+        </div>
         <CardContent>
           {isLoading ? (
             <div className="text-center py-10">Carregando...</div>

@@ -2,7 +2,7 @@ import type React from "react"
 import { getServerSession } from "next-auth/next"
 import { redirect } from "next/navigation"
 import { authOptions } from "@/lib/auth"
-import AdminHeader from "@/components/admin/admin-header"
+import AdminHeader from "@/components/admin-header"
 
 export default async function AdminLayout({
   children,

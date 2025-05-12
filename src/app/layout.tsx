@@ -6,9 +6,9 @@ import "./styles/globals.css"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Plataforma de Testes Online",
-  description: "Descubra seu nível em diferentes tecnologias",
-    generator: 'v0.dev'
+  title: "Formação SmartES | Excel Solutions",
+  description:
+    "Transforme dados em informações úteis que fazem a diferença! A Formação Inteligente em Análise de Dados da Excel Solutions.",
 }
 
 export default function RootLayout({
@@ -17,7 +17,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="pt-BR">
+    <html lang="pt-BR" className="scroll-smooth">
       <body className={`${inter.className} bg-slate-50`}>{children}</body>
     </html>
   )

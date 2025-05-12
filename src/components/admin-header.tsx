@@ -13,23 +13,24 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { BookOpen, Users, LogOut } from "lucide-react"
+import Image from "next/image"
 
 export default function AdminHeader({ user }: { user: any }) {
   return (
     <header className="border-b bg-white">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-12">
           <Link href="/admin/dashboard" className="font-bold text-xl">
-            TestePro Admin
+            <Image src="/logo.png" alt="Excel Solutions" width={110} height={20} className="h-10 w-auto" />
           </Link>
           <nav className="hidden md:flex items-center gap-6">
-            <Link href="/admin/dashboard" className="text-sm font-medium transition-colors hover:text-blue-600">
+            <Link href="/admin/dashboard" className="text-slate-700 transition-colors hover:text-blue-600">
               Testes
             </Link>
-            <Link href="/admin/leads" className="text-sm font-medium transition-colors hover:text-blue-600">
+            <Link href="/admin/dashboard/leads" className="text-slate-700 transition-colors hover:text-blue-600">
               Leads
             </Link>
-            <Link href="/admin/users" className="text-sm font-medium transition-colors hover:text-blue-600">
+            <Link href="/admin/dashboard/users" className="text-slate-700 transition-colors hover:text-blue-600">
               Usuários
             </Link>
           </nav>

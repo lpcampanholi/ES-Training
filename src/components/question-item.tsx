@@ -4,17 +4,24 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Pencil, Trash2 } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import QuestionForm from "@/components/admin/question-form"
+import QuestionForm from "@/components/question-form"
+import parse from "html-react-parser"
 
 export default function QuestionItem({
   question,
   index,
   onDelete,
+  onUpdate,
 }: {
   question: any
   index: number
   onDelete: () => void
+  onUpdate: (questionId: string, data: any) => void
 }) {
+  const handleUpdate = (data: any) => {
+    onUpdate(question.id, data)
+  }
+
   return (
     <Card>
       <CardContent className="p-6">
@@ -32,7 +39,7 @@ export default function QuestionItem({
                 <DialogHeader>
                   <DialogTitle>Editar Questão</DialogTitle>
                 </DialogHeader>
-                <QuestionForm initialData={question} onSubmit={() => {}} isEditing />
+                <QuestionForm initialData={question} onSubmit={handleUpdate} isEditing />
               </DialogContent>
             </Dialog>
             <Button variant="destructive" size="sm" onClick={onDelete}>
@@ -42,7 +49,7 @@ export default function QuestionItem({
           </div>
         </div>
         <div className="mb-4">
-          <p className="whitespace-pre-line">{question.text}</p>
+          <div className="rich-text-content">{parse(question.text)}</div>
           {question.imageUrl && (
             <div className="mt-2">
               <img

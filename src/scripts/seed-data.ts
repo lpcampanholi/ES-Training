@@ -3,6 +3,90 @@ import { hash } from "bcrypt"
 
 const prisma = new PrismaClient()
 
+// Função para gerar conteúdo HTML de exemplo para questões
+function generateRichTextQuestion(index: number, subject: string) {
+  const richTextTemplates = [
+    `<h3>Análise o problema abaixo:</h3>
+    <p>Considere uma planilha de ${subject} com os seguintes dados:</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Produto</th>
+          <th>Quantidade</th>
+          <th>Preço</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Produto A</td>
+          <td>10</td>
+          <td>R$ 25,00</td>
+          <td>R$ 250,00</td>
+        </tr>
+        <tr>
+          <td>Produto B</td>
+          <td>5</td>
+          <td>R$ 30,00</td>
+          <td>R$ 150,00</td>
+        </tr>
+        <tr>
+          <td>Produto C</td>
+          <td>8</td>
+          <td>R$ 15,00</td>
+          <td>R$ 120,00</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Qual é a fórmula correta para calcular o total de vendas?</p>`,
+
+    `<h3>Observe a imagem abaixo:</h3>
+    <p>A imagem mostra um gráfico de desempenho de vendas ao longo do tempo.</p>
+    <img src="/placeholder.svg?height=200&width=400" alt="Gráfico de vendas" />
+    <p>Com base no gráfico apresentado, qual das seguintes afirmações está correta?</p>`,
+
+    `<h3>Leia o código a seguir:</h3>
+    <pre><code>
+function processData(data) {
+  let result = 0;
+  for (let i = 0; i < data.length; i++) {
+    if (data[i] > 10) {
+      result += data[i];
+    }
+  }
+  return result;
+}
+    </code></pre>
+    <p>O que este código faz?</p>`,
+
+    `<h3>Considere o seguinte cenário:</h3>
+    <p>Você precisa analisar um conjunto de dados com informações de clientes. Os dados incluem:</p>
+    <ul>
+      <li>Nome do cliente</li>
+      <li>Data da compra</li>
+      <li>Valor da compra</li>
+      <li>Categoria do produto</li>
+    </ul>
+    <p>Qual seria a melhor abordagem para visualizar a distribuição de compras por categoria?</p>`,
+
+    `<h3>Analise a seguinte consulta SQL:</h3>
+    <pre><code>
+SELECT 
+  department,
+  COUNT(*) as employee_count,
+  AVG(salary) as avg_salary
+FROM employees
+GROUP BY department
+HAVING COUNT(*) > 5
+ORDER BY avg_salary DESC;
+    </code></pre>
+    <p>O que esta consulta retorna?</p>`,
+  ]
+
+  // Selecionar um template aleatório
+  return richTextTemplates[index % richTextTemplates.length]
+}
+
 async function main() {
   console.log("🌱 Iniciando seed de dados...")
 
@@ -87,10 +171,12 @@ async function main() {
   for (const test of createdTests) {
     // Criar 5 questões para cada teste
     for (let i = 1; i <= 5; i++) {
+      const richTextContent = generateRichTextQuestion(i - 1, test.title.split(" - ")[0].replace("Teste de ", ""))
+
       const question = await prisma.question.create({
         data: {
           order: i,
-          text: `Questão ${i} do teste de ${test.title}. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua?`,
+          text: richTextContent,
           testId: test.id,
           options: {
             create: [

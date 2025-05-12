@@ -17,6 +17,7 @@ export async function GET() {
         },
       },
     })
+    console.log("Fetched subjects:", subjects)
     return NextResponse.json(subjects)
   } catch (error) {
     console.error("Error fetching subjects:", error)

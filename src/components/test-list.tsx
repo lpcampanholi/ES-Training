@@ -62,7 +62,7 @@ export default function TestList({ subjects }: { subjects: any[] }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {allTests.map((test) => (
-        <Link key={test.id} href={`/admin/tests/${test.id}`}>
+        <Link key={test.id} href={`/admin/dashboard/tests/${test.id}`}>
           <Card className="h-full hover:shadow-md transition-shadow cursor-pointer">
             <CardContent className="p-6">
               <div className="flex items-center gap-3 mb-4">

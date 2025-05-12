@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Users, BookOpen } from "lucide-react"
 import prisma from "@/lib/prisma"
-import TestList from "@/components/admin/test-list"
+import TestList from "@/components/test-list"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 
@@ -20,14 +20,10 @@ export default async function DashboardPage() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-slate-800">Painel Administrativo</h1>
-      </div>
-
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total de Testes</CardTitle>
+            <CardTitle className="text-sm font-medium">Total de testes</CardTitle>
             <BookOpen className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
@@ -36,7 +32,7 @@ export default async function DashboardPage() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total de Questões</CardTitle>
+            <CardTitle className="text-sm font-medium">Total de questões</CardTitle>
             <BookOpen className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
@@ -45,7 +41,7 @@ export default async function DashboardPage() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total de Leads</CardTitle>
+            <CardTitle className="text-sm font-medium">Total de leads</CardTitle>
             <Users className="h-4 w-4 text-amber-600" />
           </CardHeader>
           <CardContent>
@@ -54,7 +50,7 @@ export default async function DashboardPage() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total de Usuários</CardTitle>
+            <CardTitle className="text-sm font-medium">Total de usuários</CardTitle>
             <Users className="h-4 w-4 text-purple-600" />
           </CardHeader>
           <CardContent>
@@ -64,8 +60,8 @@ export default async function DashboardPage() {
       </div>
 
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-slate-800">Todos os Testes</h2>
-        <Link href="/admin/tests/new">
+        <h2 className="text-2xl font-bold text-slate-800">Todos os testes</h2>
+        <Link href="/admin/dashboard/tests/new">
           <Button>Adicionar Teste</Button>
         </Link>
       </div>
