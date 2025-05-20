@@ -13,27 +13,21 @@ database: testes_online
 admin@example.com
 admin123
 
-27 de Abril - 1h
-
-28 de Abril - 1h
-
+27/04 - 1h
+28/04 - 1h
 01/05 - 1,5h
-
 02/05 - 1h
-
 03/05 - 4h
-
 04/05 - 2,5h
-
 05/05 - 2h
-
 10/05 - 1,5h
-
 11/05 - 1h
+12/05 - 3h
+_________________
 
-12/05 - 2h
 
-Total - 15h
+
+Total: 18,5 horas x 80 = R$ 1480,00
 
 
 ## Níveis
@@ -68,3 +62,11 @@ ESTUDANTES - qual módulo (formação Smart e Profissional do Excel)
 
 *INDICAÇÃO* - liste 10 contatos e ganhe até 10% de desconto na formação da excel solutions
 
+Comando para resetar o banco:
+```
+npx prisma db push --force-reset
+```
+Popular o banco:
+```
+npx tsx .\src\scripts\seed-data.ts 
+```

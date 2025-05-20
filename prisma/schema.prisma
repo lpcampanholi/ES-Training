@@ -19,22 +19,23 @@ model User {
   role      Role     @default(SELLER)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("users")
 }
 
 model Test {
   id          String     @id @default(cuid())
-  title       String
-  slug        String
+  subject     Subject
   level       Level
   description String?
+  color       String?
   timeLimit   Int        @default(1200) // em segundos (20 minutos padrão)
   isActive    Boolean    @default(true)
-  subjectId   String
   questions   Question[]
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 
-  @@unique([slug, subjectId])
+  @@map("tests")
 }
 
 model Question {
@@ -48,19 +49,22 @@ model Question {
   updatedAt DateTime @updatedAt
 
   @@unique([testId, order])
+  @@map("questions")
 }
 
 model Option {
   id         String   @id @default(cuid())
   text       String
   isCorrect  Boolean  @default(false)
-  order      String // 'a', 'b', 'c', 'd', 'e'
+  value      Int
+  order      String // 'a', 'b', 'c', 'd'
   questionId String
   question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
   @@unique([questionId, order])
+  @@map("options")
 }
 
 model Lead {
@@ -70,6 +74,15 @@ model Lead {
   phone     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("leads")
+}
+
+enum Subject {
+  excel
+  sql
+  python
+  powerbi
 }
 
 enum Role {
@@ -82,5 +95,4 @@ enum Level {
   fundamental
   essencial
   avancado
-  profissional
 }
