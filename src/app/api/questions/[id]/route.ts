@@ -10,11 +10,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
         id: params.id,
       },
       include: {
-        options: {
-          orderBy: {
-            order: "asc",
-          },
-        },
+        options: true,
       },
     })
 
@@ -33,15 +29,34 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   try {
     const session = await getServerSession(authOptions)
 
-    if (!session || session.user.role !== "ADMIN") {
+    if (!session || !["ADMIN", "MASTER"].includes(session.user.role)) {
       return NextResponse.json({ error: "Não autorizado" }, { status: 401 })
     }
 
     const body = await request.json()
-    const { text, imageUrl, options } = body
+    const { text, subject, level, options } = body
 
-    if (!text || !options || options.length === 0) {
-      return NextResponse.json({ error: "Texto e opções são obrigatórios" }, { status: 400 })
+    if (!text || !subject || !level || !options || options.length !== 4) {
+      return NextResponse.json({ error: "Texto, disciplina, nível e 4 opções são obrigatórios" }, { status: 400 })
+    }
+
+    // Validar se pelo menos uma opção tem valor 10.0 (totalmente correta)
+    const hasCorrectOption = options.some((option: any) => option.value === 10.0)
+    if (!hasCorrectOption) {
+      return NextResponse.json(
+        { error: "Pelo menos uma opção deve ser totalmente correta (valor 10.0)" },
+        { status: 400 },
+      )
+    }
+
+    // Validar se todas as opções têm valores válidos
+    const validValues = [0.0, 4.0, 7.0, 10.0]
+    const allOptionsHaveValidValues = options.every((option: any) => validValues.includes(option.value))
+    if (!allOptionsHaveValidValues) {
+      return NextResponse.json(
+        { error: "Todas as opções devem ter valores válidos (0.0, 4.0, 7.0 ou 10.0)" },
+        { status: 400 },
+      )
     }
 
     // Atualizar a questão
@@ -51,30 +66,27 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       },
       data: {
         text,
-        imageUrl,
+        subject,
+        level,
       },
     })
 
-    // Atualizar ou criar opções
+    // Excluir todas as opções existentes
+    await prisma.option.deleteMany({
+      where: {
+        questionId: params.id,
+      },
+    })
+
+    // Criar novas opções
     for (const option of options) {
-      if (option.id) {
-        await prisma.option.update({
-          where: { id: option.id },
-          data: {
-            text: option.text,
-            isCorrect: option.isCorrect,
-          },
-        })
-      } else {
-        await prisma.option.create({
-          data: {
-            text: option.text,
-            isCorrect: option.isCorrect,
-            order: option.order,
-            questionId: params.id,
-          },
-        })
-      }
+      await prisma.option.create({
+        data: {
+          text: option.text,
+          value: option.value,
+          questionId: params.id,
+        },
+      })
     }
 
     // Buscar a questão atualizada com suas opções
@@ -83,11 +95,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         id: params.id,
       },
       include: {
-        options: {
-          orderBy: {
-            order: "asc",
-          },
-        },
+        options: true,
       },
     })
 
@@ -102,7 +110,7 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
   try {
     const session = await getServerSession(authOptions)
 
-    if (!session || session.user.role !== "ADMIN") {
+    if (!session || !["ADMIN", "MASTER"].includes(session.user.role)) {
       return NextResponse.json({ error: "Não autorizado" }, { status: 401 })
     }
 

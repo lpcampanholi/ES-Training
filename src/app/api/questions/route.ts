@@ -3,42 +3,83 @@ import prisma from "@/lib/prisma"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 
+export async function GET(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const subject = searchParams.get("subject")
+    const level = searchParams.get("level")
+
+    const where: any = {}
+
+    if (subject) {
+      where.subject = subject
+    }
+
+    if (level) {
+      where.level = level
+    }
+
+    const questions = await prisma.question.findMany({
+      where,
+      include: {
+        options: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    })
+
+    return NextResponse.json(questions)
+  } catch (error) {
+    console.error("Error fetching questions:", error)
+    return NextResponse.json({ error: "Erro ao buscar questões" }, { status: 500 })
+  }
+}
+
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions)
 
-    if (!session || session.user.role !== "ADMIN") {
+    if (!session || !["ADMIN", "MASTER"].includes(session.user.role)) {
       return NextResponse.json({ error: "Não autorizado" }, { status: 401 })
     }
 
     const body = await request.json()
-    const { text, imageUrl, testId, options } = body
+    const { text, subject, level, options } = body
 
-    if (!text || !testId || !options || options.length === 0) {
-      return NextResponse.json({ error: "Texto, teste e opções são obrigatórios" }, { status: 400 })
+    if (!text || !subject || !level || !options || options.length !== 4) {
+      return NextResponse.json({ error: "Texto, disciplina, nível e 4 opções são obrigatórios" }, { status: 400 })
     }
 
-    // Encontrar a ordem mais alta atual
-    const highestOrder = await prisma.question.findFirst({
-      where: { testId },
-      orderBy: { order: "desc" },
-      select: { order: true },
-    })
+    // Validar se pelo menos uma opção tem valor 10.0 (totalmente correta)
+    const hasCorrectOption = options.some((option: any) => option.value === 10.0)
+    if (!hasCorrectOption) {
+      return NextResponse.json(
+        { error: "Pelo menos uma opção deve ser totalmente correta (valor 10.0)" },
+        { status: 400 },
+      )
+    }
 
-    const newOrder = highestOrder ? highestOrder.order + 1 : 1
+    // Validar se todas as opções têm valores válidos
+    const validValues = [0.0, 4.0, 7.0, 10.0]
+    const allOptionsHaveValidValues = options.every((option: any) => validValues.includes(option.value))
+    if (!allOptionsHaveValidValues) {
+      return NextResponse.json(
+        { error: "Todas as opções devem ter valores válidos (0.0, 4.0, 7.0 ou 10.0)" },
+        { status: 400 },
+      )
+    }
 
     // Criar a questão com suas opções
     const question = await prisma.question.create({
       data: {
         text,
-        imageUrl,
-        testId,
-        order: newOrder,
+        subject,
+        level,
         options: {
-          create: options.map((option: any, index: number) => ({
+          create: options.map((option: any) => ({
             text: option.text,
-            isCorrect: option.isCorrect,
-            order: ["a", "b", "c", "d", "e"][index],
+            value: option.value,
           })),
         },
       },

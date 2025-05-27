@@ -3,11 +3,12 @@
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { DataTable } from "@/components/ui/data-table"
-import { useToast } from "@/hooks/use-toast"
+import { toast } from "sonner"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import { Badge } from "@/components/ui/badge"
 import type { ColumnDef } from "@tanstack/react-table"
+import { Loader2 } from "lucide-react"
 
 type User = {
   id: string
@@ -18,7 +19,6 @@ type User = {
 }
 
 export default function UsersPage() {
-  const { toast } = useToast()
   const [users, setUsers] = useState<User[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
@@ -32,10 +32,8 @@ export default function UsersPage() {
         const data = await response.json()
         setUsers(data)
       } catch (error) {
-        toast({
-          title: "Erro",
+        toast("Erro", {
           description: "Não foi possível carregar os usuários",
-          variant: "destructive",
         })
       } finally {
         setIsLoading(false)
@@ -79,7 +77,9 @@ export default function UsersPage() {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="text-center py-10">Carregando...</div>
+            <div className="flex justify-center py-10">
+              <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
+            </div>
           ) : (
             <DataTable columns={columns} data={users} searchColumn="email" searchPlaceholder="Buscar por email..." />
           )}

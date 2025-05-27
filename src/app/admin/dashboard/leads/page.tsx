@@ -1,68 +1,68 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardTitle } from "@/components/ui/card"
-import { DataTable } from "@/components/ui/data-table"
-import { Button } from "@/components/ui/button"
-import { Eye, Download } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
-import { format } from "date-fns"
-import { ptBR } from "date-fns/locale"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Badge } from "@/components/ui/badge"
-import type { ColumnDef } from "@tanstack/react-table"
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { DataTable } from "@/components/ui/data-table";
+import { Button } from "@/components/ui/button";
+import { Eye, Download, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import type { ColumnDef } from "@tanstack/react-table";
 
 type Lead = {
-  id: string
-  name: string
-  email: string
-  phone: string | null
-  createdAt: string
-  updatedAt: string
-}
+  id: string;
+  name: string;
+  email: string;
+  phone: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
 
 export default function LeadsPage() {
-  const { toast } = useToast()
-  const [leads, setLeads] = useState<Lead[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [selectedLead, setSelectedLead] = useState<Lead | null>(null)
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [leads, setLeads] = useState<Lead[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   useEffect(() => {
     const fetchLeads = async () => {
       try {
-        const response = await fetch("/api/leads")
+        const response = await fetch("/api/leads");
         if (!response.ok) {
-          throw new Error("Erro ao buscar leads")
+          throw new Error("Erro ao buscar leads");
         }
-        const data = await response.json()
-        setLeads(data)
+        const data = await response.json();
+        setLeads(data);
       } catch (error) {
-        toast({
-          title: "Erro",
+        toast("Erro", {
           description: "Não foi possível carregar os leads",
-          variant: "destructive",
-        })
+        });
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
-    }
+    };
 
-    fetchLeads()
-  }, [toast])
+    fetchLeads();
+  }, [toast]);
 
   const handleExportCSV = () => {
     if (leads.length === 0) {
-      toast({
-        title: "Nenhum dado para exportar",
+      toast("Nenhum dado para exportar", {
         description: "Não há leads para exportar",
-        variant: "destructive",
-      })
-      return
+      });
+      return;
     }
 
     // Criar cabeçalho CSV
-    const headers = ["Nome", "Email", "Telefone", "Data de Cadastro"]
+    const headers = ["Nome", "Email", "Telefone", "Data de Cadastro"];
 
     // Criar linhas de dados
     const rows = leads.map((lead) => [
@@ -70,32 +70,37 @@ export default function LeadsPage() {
       lead.email,
       lead.phone || "",
       format(new Date(lead.createdAt), "dd/MM/yyyy HH:mm"),
-    ])
+    ]);
 
     // Combinar cabeçalho e linhas
-    const csvContent = [headers.join(","), ...rows.map((row) => row.join(","))].join("\n")
+    const csvContent = [
+      headers.join(","),
+      ...rows.map((row) => row.join(",")),
+    ].join("\n");
 
     // Criar blob e link para download
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement("a")
-    link.setAttribute("href", url)
-    link.setAttribute("download", `leads_${format(new Date(), "yyyy-MM-dd")}.csv`)
-    link.style.visibility = "hidden"
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute(
+      "download",
+      `leads_${format(new Date(), "yyyy-MM-dd")}.csv`
+    );
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 
-    toast({
-      title: "Exportação concluída",
+    toast("Exportação concluída",{
       description: "Os leads foram exportados com sucesso",
-    })
-  }
+    });
+  };
 
   const viewLeadDetails = (lead: Lead) => {
-    setSelectedLead(lead)
-    setIsDialogOpen(true)
-  }
+    setSelectedLead(lead);
+    setIsDialogOpen(true);
+  };
 
   const columns: ColumnDef<Lead>[] = [
     {
@@ -114,19 +119,26 @@ export default function LeadsPage() {
     {
       accessorKey: "createdAt",
       header: "Data de Cadastro",
-      cell: ({ row }) => format(new Date(row.original.createdAt), "dd/MM/yyyy HH:mm", { locale: ptBR }),
+      cell: ({ row }) =>
+        format(new Date(row.original.createdAt), "dd/MM/yyyy HH:mm", {
+          locale: ptBR,
+        }),
     },
     {
       id: "actions",
       header: "Ações",
       cell: ({ row }) => (
-        <Button variant="ghost" size="sm" onClick={() => viewLeadDetails(row.original)}>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => viewLeadDetails(row.original)}
+        >
           <Eye className="h-4 w-4" />
           <span className="sr-only">Ver detalhes</span>
         </Button>
       ),
     },
-  ]
+  ];
 
   return (
     <div>
@@ -140,9 +152,16 @@ export default function LeadsPage() {
         </div>
         <CardContent>
           {isLoading ? (
-            <div className="text-center py-10">Carregando...</div>
+            <div className="flex justify-center py-10">
+              <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
+            </div>
           ) : (
-            <DataTable columns={columns} data={leads} searchColumn="name" searchPlaceholder="Buscar por nome..." />
+            <DataTable
+              columns={columns}
+              data={leads}
+              searchColumn="name"
+              searchPlaceholder="Buscar por nome..."
+            />
           )}
         </CardContent>
       </Card>
@@ -167,9 +186,15 @@ export default function LeadsPage() {
                 <p className="text-lg">{selectedLead.phone || "-"}</p>
               </div>
               <div>
-                <h3 className="text-sm font-medium text-slate-500">Data de Cadastro</h3>
+                <h3 className="text-sm font-medium text-slate-500">
+                  Data de Cadastro
+                </h3>
                 <p className="text-lg">
-                  {format(new Date(selectedLead.createdAt), "dd 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR })}
+                  {format(
+                    new Date(selectedLead.createdAt),
+                    "dd 'de' MMMM 'de' yyyy 'às' HH:mm",
+                    { locale: ptBR }
+                  )}
                 </p>
               </div>
               <div className="pt-2">
@@ -180,5 +205,5 @@ export default function LeadsPage() {
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }

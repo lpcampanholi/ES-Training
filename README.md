@@ -13,29 +13,29 @@ database: testes_online
 admin@example.com
 admin123
 
-27/04 - 1h
-28/04 - 1h
-01/05 - 1,5h
-02/05 - 1h
-03/05 - 4h
-04/05 - 2,5h
-05/05 - 2h
-10/05 - 1,5h
-11/05 - 1h
-12/05 - 3h
+27/04 - 1h 
+28/04 - 1h 
+01/05 - 1,5h 
+02/05 - 1h 
+03/05 - 4h 
+04/05 - 2,5h 
+05/05 - 2h 
+10/05 - 1,5h 
+11/05 - 1h 
+12/05 - 3h 
 _________________
 
-
-
-Total: 18,5 horas x 80 = R$ 1480,00
-
+19/05 - 1,5h 
+24/05 - 3h + 2h à noite
+25/05 - 2h
+27/05 - 1h (de manhã)
 
 ## Níveis
 
-Fundamental
-Essencial
-Avançado
-Profissional (só do Excel)
+- Fundamental
+- Essencial
+- Avançado
+- Profissional (só do Excel)
 
 Formação completa - 12 créditos - 3 por módulo
 
@@ -70,3 +70,10 @@ Popular o banco:
 ```
 npx tsx .\src\scripts\seed-data.ts 
 ```
+
+## Valor das questões
+
+Totalmente errada: 0 
+Parcialmente certa: 40 
+Quase certa: 70 
+Totalmente certa: 100 

@@ -36,7 +36,7 @@ export default function LoginPage() {
         return
       }
 
-      router.push("/admin/dashboard")
+      router.push("/admin/dashboard/questions")
     } catch (error) {
       setError("Ocorreu um erro ao fazer login")
       setIsLoading(false)

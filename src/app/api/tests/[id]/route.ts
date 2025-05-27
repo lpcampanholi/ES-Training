@@ -1,95 +1,47 @@
 import { NextResponse } from "next/server"
 import prisma from "@/lib/prisma"
-import { getServerSession } from "next-auth/next"
-import { authOptions } from "@/lib/auth"
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   try {
-    const test = await prisma.test.findUnique({
+    const userTest = await prisma.userTest.findUnique({
       where: {
         id: params.id,
       },
-      include: {
-        subject: true,
-        questions: {
-          orderBy: {
-            order: "asc",
-          },
-          include: {
-            options: {
-              orderBy: {
-                order: "asc",
-              },
-            },
-          },
-        },
-      },
     })
 
-    if (!test) {
+    if (!userTest) {
       return NextResponse.json({ error: "Teste não encontrado" }, { status: 404 })
     }
 
-    return NextResponse.json(test)
+    // Buscar as questões do teste
+    const questionIds = JSON.parse(userTest.questions as string)
+    const questions = await prisma.question.findMany({
+      where: {
+        id: {
+          in: questionIds.slice(0, 3), // Pegar apenas as 3 primeiras questões
+        },
+      },
+      include: {
+        options: true,
+      },
+    })
+
+    // Embaralhar as opções de cada questão
+    const questionsWithShuffledOptions = questions.map((question) => {
+      const shuffledOptions = [...question.options].sort(() => Math.random() - 0.5)
+      return {
+        ...question,
+        options: shuffledOptions,
+      }
+    })
+
+    return NextResponse.json({
+      testId: userTest.id,
+      questions: questionsWithShuffledOptions,
+      currentLevel: userTest.level,
+    })
   } catch (error) {
     console.error("Error fetching test:", error)
     return NextResponse.json({ error: "Erro ao buscar teste" }, { status: 500 })
-  }
-}
-
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
-  try {
-    const session = await getServerSession(authOptions)
-
-    if (!session || session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Não autorizado" }, { status: 401 })
-    }
-
-    const body = await request.json()
-    const { title, slug, level, description, timeLimit, isActive } = body
-
-    if (!title || !slug || !level) {
-      return NextResponse.json({ error: "Título, slug e nível são obrigatórios" }, { status: 400 })
-    }
-
-    const test = await prisma.test.update({
-      where: {
-        id: params.id,
-      },
-      data: {
-        title,
-        slug,
-        level,
-        description,
-        timeLimit,
-        isActive,
-      },
-    })
-
-    return NextResponse.json(test)
-  } catch (error) {
-    console.error("Error updating test:", error)
-    return NextResponse.json({ error: "Erro ao atualizar teste" }, { status: 500 })
-  }
-}
-
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
-  try {
-    const session = await getServerSession(authOptions)
-
-    if (!session || session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Não autorizado" }, { status: 401 })
-    }
-
-    await prisma.test.delete({
-      where: {
-        id: params.id,
-      },
-    })
-
-    return NextResponse.json({ success: true })
-  } catch (error) {
-    console.error("Error deleting test:", error)
-    return NextResponse.json({ error: "Erro ao excluir teste" }, { status: 500 })
   }
 }

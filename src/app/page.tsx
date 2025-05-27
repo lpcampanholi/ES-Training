@@ -67,7 +67,7 @@ export default function LandingPage() {
                 análise de dados.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link href="/disciplinas">
+                <Link href="/subjects">
                   <Button size="lg" className="bg-green-600 hover:bg-green-700">
                     Quero começar minha jornada
                     <ArrowRight className="ml-2 h-5 w-5" />
@@ -224,7 +224,7 @@ export default function LandingPage() {
           </div>
 
           <div className="text-center mt-12">
-            <Link href="/disciplinas">
+            <Link href="/subjects">
               <Button size="lg" className="bg-green-600 hover:bg-green-700">
                 Quero começar minha jornada
                 <ArrowRight className="ml-2 h-5 w-5" />
@@ -349,7 +349,7 @@ export default function LandingPage() {
 
           <p className="text-xl mb-8">Qual é o preço de transformar sua carreira para sempre?</p>
 
-          <Link href="/disciplinas">
+          <Link href="/subjects"> 
             <Button size="lg" variant="outline" className="bg-white text-green-600 hover:bg-slate-100 border-white">
               Quero começar minha jornada
               <ArrowRight className="ml-2 h-5 w-5" />

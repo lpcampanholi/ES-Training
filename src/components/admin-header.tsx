@@ -21,11 +21,11 @@ export default function AdminHeader({ user }: { user: any }) {
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-12">
           <Link href="/admin/dashboard" className="font-bold text-xl">
-            <Image src="/logo.png" alt="Excel Solutions" width={110} height={20} className="h-10 w-auto" />
+            <Image src="/logo.png" alt="Excel Solutions" width={110} height={20} className="h-10 w-auto" priority={false} />
           </Link>
           <nav className="hidden md:flex items-center gap-6">
-            <Link href="/admin/dashboard" className="text-slate-700 transition-colors hover:text-blue-600">
-              Testes
+            <Link href="/admin/dashboard/questions" className="text-slate-700 transition-colors hover:text-blue-600">
+              Questões
             </Link>
             <Link href="/admin/dashboard/leads" className="text-slate-700 transition-colors hover:text-blue-600">
               Leads
@@ -40,7 +40,7 @@ export default function AdminHeader({ user }: { user: any }) {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src={user.image || "/placeholder.svg"} alt={user.name} />
+                  <AvatarImage src={user.image || "/user.png"} alt={user.name} />
                   <AvatarFallback>{user.name?.charAt(0)}</AvatarFallback>
                 </Avatar>
               </Button>

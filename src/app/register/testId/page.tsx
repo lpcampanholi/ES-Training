@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label"
 import { ArrowLeft, User, Mail, Phone, ArrowRight } from "lucide-react"
 import Link from "next/link"
 import { registerLead } from "@/services/api"
-import { useToast } from "@/hooks/use-toast"
+import { toast } from "sonner"
 
 export default function RegistroPage({
   params,
@@ -18,7 +18,6 @@ export default function RegistroPage({
   params: { testId: string }
 }) {
   const router = useRouter()
-  const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
     nome: "",
@@ -46,10 +45,8 @@ export default function RegistroPage({
       // Redirecionar para a página de teste
       router.push(`/teste/${params.testId}?email=${encodeURIComponent(formData.email)}`)
     } catch (error: any) {
-      toast({
-        title: "Erro",
+      toast("Erro", {
         description: error.message || "Ocorreu um erro ao registrar seus dados",
-        variant: "destructive",
       })
     } finally {
       setIsLoading(false)

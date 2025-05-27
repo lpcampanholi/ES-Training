@@ -23,48 +23,44 @@ model User {
   @@map("users")
 }
 
-model Test {
-  id          String     @id @default(cuid())
-  subject     Subject
-  level       Level
-  description String?
-  color       String?
-  timeLimit   Int        @default(1200) // em segundos (20 minutos padrão)
-  isActive    Boolean    @default(true)
-  questions   Question[]
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-
-  @@map("tests")
-}
-
 model Question {
   id        String   @id @default(cuid())
-  order     Int
   text      String   @db.Text
-  testId    String
-  test      Test     @relation(fields: [testId], references: [id], onDelete: Cascade)
+  subject   Subject
+  level     Level
   options   Option[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([testId, order])
   @@map("questions")
 }
 
 model Option {
   id         String   @id @default(cuid())
-  text       String
-  isCorrect  Boolean  @default(false)
-  value      Int
-  order      String // 'a', 'b', 'c', 'd'
+  text       String   @db.Text
+  value      Float    // 0.0, 4.0, 7.0, 10.0
   questionId String
   question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
-  @@unique([questionId, order])
   @@map("options")
+}
+
+model UserTest {
+  id         String   @id @default(cuid())
+  userId     String
+  score      Float?
+  answers    Json     // Armazenar as respostas como JSON {questionId: optionId}
+  questions  Json     // Armazenar os IDs das questões como JSON array
+  subject    Subject
+  level      Level
+  startedAt  DateTime @default(now())
+  finishedAt DateTime?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("user_tests")
 }
 
 model Lead {
@@ -95,4 +91,5 @@ enum Level {
   fundamental
   essencial
   avancado
+  profissional
 }

@@ -2,20 +2,15 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { v4 as uuidv4 } from "uuid"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { RichTextEditor } from "@/components/ui/rich-text-editor"
 
-const defaultOptions = [
-  { id: "", text: "", isCorrect: false, order: "a" },
-  { id: "", text: "", isCorrect: false, order: "b" },
-  { id: "", text: "", isCorrect: false, order: "c" },
-  { id: "", text: "", isCorrect: false, order: "d" },
-  { id: "", text: "", isCorrect: false, order: "e" },
-]
+// Valores possíveis para as opções
+const optionValues = [0.0, 4.0, 7.0, 10.0]
 
 export default function QuestionForm({
   initialData,
@@ -26,10 +21,17 @@ export default function QuestionForm({
   onSubmit: (data: any) => void
   isEditing?: boolean
 }) {
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [formData, setFormData] = useState({
     text: initialData?.text || "",
-    imageUrl: initialData?.imageUrl || "",
-    options: initialData?.options || defaultOptions,
+    subject: initialData?.subject || "excel",
+    level: initialData?.level || "essencial",
+    options: initialData?.options || [
+      { id: uuidv4(), text: "", value: 0.0 },
+      { id: uuidv4(), text: "", value: 0.0 },
+      { id: uuidv4(), text: "", value: 0.0 },
+      { id: uuidv4(), text: "", value: 0.0 },
+    ],
   })
 
   const handleTextChange = (value: string) => {
@@ -39,24 +41,13 @@ export default function QuestionForm({
     }))
   }
 
-  const handleOptionChange = (index: number, field: string, value: any) => {
+  const handleOptionTextChange = (index: number, value: string) => {
     setFormData((prev) => {
       const newOptions = [...prev.options]
-
-      // Se estamos alterando o campo isCorrect para true, precisamos desmarcar as outras opções
-      if (field === "isCorrect" && value === true) {
-        newOptions.forEach((option, i) => {
-          if (i !== index) {
-            option.isCorrect = false
-          }
-        })
-      }
-
       newOptions[index] = {
         ...newOptions[index],
-        [field]: value,
+        text: value,
       }
-
       return {
         ...prev,
         options: newOptions,
@@ -64,67 +55,118 @@ export default function QuestionForm({
     })
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSelectChange = (field: string, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }))
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-
-    // Validar se pelo menos uma opção está marcada como correta
-    const hasCorrectOption = formData.options.some((option) => option.isCorrect)
-
-    if (!hasCorrectOption) {
-      alert("É necessário marcar pelo menos uma opção como correta")
-      return
-    }
 
     // Validar se todas as opções têm texto
     const allOptionsHaveText = formData.options.every((option) => option.text.trim() !== "")
-
     if (!allOptionsHaveText) {
       alert("Todas as opções devem ter um texto")
       return
     }
 
-    onSubmit(formData)
+    // Validar se pelo menos uma opção tem valor 10.0 (totalmente correta)
+    const hasCorrectOption = formData.options.some((option) => option.value === 10.0)
+    if (!hasCorrectOption) {
+      alert("Pelo menos uma opção deve ser totalmente correta (valor 10.0)")
+      return
+    }
+    setIsSubmitting(true)
+    await onSubmit(formData)
+    setIsSubmitting(false)
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-2">
+          <Label htmlFor="subject">Disciplina</Label>
+          <Select value={formData.subject} onValueChange={(value) => handleSelectChange("subject", value)}>
+            <SelectTrigger>
+              <SelectValue placeholder="Selecione a disciplina" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="excel">Excel</SelectItem>
+              <SelectItem value="sql">SQL</SelectItem>
+              <SelectItem value="python">Python</SelectItem>
+              <SelectItem value="powerbi">Power BI</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="level">Nível</Label>
+          <Select value={formData.level} onValueChange={(value) => handleSelectChange("level", value)}>
+            <SelectTrigger>
+              <SelectValue placeholder="Selecione o nível" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="fundamental">Fundamental</SelectItem>
+              <SelectItem value="essencial">Essencial</SelectItem>
+              <SelectItem value="avancado">Avançado</SelectItem>
+              <SelectItem value="profissional">Profissional</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
       <div className="space-y-2">
-        <Label htmlFor="text">Enunciado</Label>
-        <RichTextEditor
-          value={formData.text}
-          onChange={handleTextChange}
-          placeholder="Digite o enunciado da questão..."
-        />
+        <Label htmlFor="text">Enunciado da Questão</Label>
+          <RichTextEditor
+            value={formData.text}
+            onChange={handleTextChange}
+            placeholder="Digite o enunciado da questão..."
+          />
+        <p className="text-sm text-slate-500 mt-1">
+          Use o editor acima para formatar o texto, adicionar imagens, tabelas e outros elementos.
+        </p>
       </div>
 
       <div className="space-y-4">
-        <Label>Alternativas</Label>
+        <Label>Alternativas (4 opções)</Label>
         {formData.options.map((option, index) => (
-          <div key={index} className="grid grid-cols-12 gap-4 items-center">
+          <div key={option.id} className="grid grid-cols-12 gap-4 items-center">
             <div className="col-span-1">
-              <div className="flex items-center justify-center h-10 w-10 rounded-full bg-slate-100">{option.order}</div>
+              <div className="flex items-center justify-center h-10 w-10 rounded-full bg-slate-100">{index + 1}</div>
             </div>
-            <div className="col-span-9">
-              <Input
-                value={option.text}
-                onChange={(e) => handleOptionChange(index, "text", e.target.value)}
-                placeholder={`Alternativa ${option.order}`}
-                required
+            <div className="col-span-8">
+              <RichTextEditor
+                value={formData.text}
+                onChange={handleTextChange}
+                placeholder="Digite o enunciado da questão..."
               />
             </div>
-            <div className="col-span-2 flex items-center gap-2">
-              <Switch
-                checked={option.isCorrect}
-                onCheckedChange={(checked) => handleOptionChange(index, "isCorrect", checked)}
-              />
-              <Label className="cursor-pointer">Correta</Label>
+            <div className="col-span-3">
+              <Select
+                value={option.value.toString()}
+                onValueChange={(value) => handleOptionValueChange(index, Number.parseFloat(value))}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Valor" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="0">Totalmente errada (0.0)</SelectItem>
+                  <SelectItem value="4">Parcialmente certa (4.0)</SelectItem>
+                  <SelectItem value="7">Quase certa (7.0)</SelectItem>
+                  <SelectItem value="10">Totalmente certa (10.0)</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         ))}
       </div>
 
       <div className="flex justify-end">
-        <Button type="submit">{isEditing ? "Salvar Alterações" : "Adicionar Questão"}</Button>
+        <Button type="submit" loading={isSubmitting} disabled={isSubmitting}>
+          {isEditing ? "Salvar Alterações" : "Adicionar Questão"}
+        </Button>
       </div>
     </form>
   )

@@ -47,7 +47,7 @@ export function RichTextEditor({ value, onChange, placeholder = "Digite o conte√
     "underline",
     "strike",
     "list",
-    "bullet",
+    // "bullet",
     "link",
     "image",
     "video",

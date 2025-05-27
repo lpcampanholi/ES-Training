@@ -6,73 +6,45 @@ import { authOptions } from "@/lib/auth"
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { userId, testId, answers } = body
+    const { userId, testId, answers, score } = body
 
     if (!userId || !testId) {
       return NextResponse.json({ error: "Usuário e teste são obrigatórios" }, { status: 400 })
     }
 
-    // Buscar o teste para calcular a pontuação
+    // Buscar o teste para verificar se existe
     const test = await prisma.test.findUnique({
       where: { id: testId },
-      include: {
-        questions: {
-          include: {
-            options: true,
-          },
-        },
-      },
     })
 
     if (!test) {
       return NextResponse.json({ error: "Teste não encontrado" }, { status: 404 })
     }
 
-    // Calcular pontuação
-    let correctAnswers = 0
-    const totalQuestions = test.questions.length
-
-    // Criar o registro do teste do usuário
+    // Criar o registro do teste do usuário com a pontuação fornecida pelo cliente
     const userTest = await prisma.userTest.create({
       data: {
         userId,
         testId,
+        score: score || 0,
         finishedAt: new Date(),
       },
     })
 
     // Registrar as respostas do usuário
     for (const answer of answers) {
-      const question = test.questions.find((q) => q.id === answer.questionId)
-
-      if (question) {
-        const correctOption = question.options.find((o) => o.isCorrect)
-
-        if (correctOption && correctOption.id === answer.optionId) {
-          correctAnswers++
-        }
-
-        await prisma.userAnswer.create({
-          data: {
-            userTestId: userTest.id,
-            questionId: answer.questionId,
-            optionId: answer.optionId,
-          },
-        })
-      }
+      await prisma.userAnswer.create({
+        data: {
+          userTestId: userTest.id,
+          questionId: answer.questionId,
+          optionId: answer.optionId,
+        },
+      })
     }
-
-    // Calcular e atualizar a pontuação
-    const score = (correctAnswers / totalQuestions) * 10
-
-    await prisma.userTest.update({
-      where: { id: userTest.id },
-      data: { score },
-    })
 
     return NextResponse.json({
       id: userTest.id,
-      score,
+      score: score || 0,
     })
   } catch (error) {
     console.error("Error submitting test:", error)
@@ -99,11 +71,7 @@ export async function GET(request: Request) {
     const userTests = await prisma.userTest.findMany({
       where: { userId },
       include: {
-        test: {
-          include: {
-            subject: true,
-          },
-        },
+        test: true,
       },
       orderBy: {
         finishedAt: "desc",
