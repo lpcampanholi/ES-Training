@@ -90,7 +90,7 @@ export default function QuestionItem({
                   Editar
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-[80%] max-h-[90vh] overflow-y-auto">
+              <DialogContent className="max-w-[70%] max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>Editar Questão</DialogTitle>
                 </DialogHeader>

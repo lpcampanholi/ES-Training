@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, use } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Clock, AlertCircle } from "lucide-react"
@@ -14,9 +14,10 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 export default function TestePage({
   params,
 }: {
-  params: { testId: string }
+  params: Promise<{ testId: string }>
 }) {
   const router = useRouter()
+  const { testId } = use(params)
 
   const [testData, setTestData] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -36,7 +37,7 @@ export default function TestePage({
     const fetchTestData = async () => {
       try {
         // Buscar o teste inicial
-        const response = await fetch(`/api/tests/${params.testId}`)
+        const response = await fetch(`/api/tests/${testId}`)
         if (!response.ok) {
           throw new Error("Erro ao buscar teste")
         }
@@ -53,7 +54,7 @@ export default function TestePage({
     }
 
     fetchTestData()
-  }, [params.testId])
+  }, [testId])
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -108,7 +109,7 @@ export default function TestePage({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          testId: params.testId,
+          testId: testId,
           answers: selectedAnswers,
         }),
       })
@@ -122,7 +123,7 @@ export default function TestePage({
       if (data.isComplete) {
         // Teste completo, redirecionar para a página de resultados
         router.push(
-          `/resultado?score=${data.score.toFixed(1).replace(".", ",")}&testId=${params.testId}&level=${data.recommendedLevel}`,
+          `/resultado?score=${data.score.toFixed(1).replace(".", ",")}&testId=${testId}&level=${data.recommendedLevel}`,
         )
       } else {
         // Mais questões disponíveis
@@ -164,7 +165,7 @@ export default function TestePage({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          testId: params.testId,
+          testId: testId,
           answers: selectedAnswers,
           isComplete: true,
         }),
@@ -176,7 +177,7 @@ export default function TestePage({
 
       const data = await response.json()
       router.push(
-        `/resultado?score=${data.score.toFixed(1).replace(".", ",")}&testId=${params.testId}&level=${data.recommendedLevel}`,
+        `/resultado?score=${data.score.toFixed(1).replace(".", ",")}&testId=${testId}&level=${data.recommendedLevel}`,
       )
     } catch (error: any) {
       toast("Erro ao finalizar teste", {

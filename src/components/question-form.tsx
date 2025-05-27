@@ -2,12 +2,12 @@
 
 import type React from "react"
 
-import { useEffect, useState } from "react"
-import { v4 as uuidv4 } from "uuid"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { RichTextEditor } from "@/components/ui/rich-text-editor"
+import { Input } from "./ui/input"
 
 // Valores possíveis para as opções
 const optionValues = [0.0, 4.0, 7.0, 10.0]
@@ -25,12 +25,12 @@ export default function QuestionForm({
   const [formData, setFormData] = useState({
     text: initialData?.text || "",
     subject: initialData?.subject || "excel",
-    level: initialData?.level || "essencial",
+    level: initialData?.level || "fundamental",
     options: initialData?.options || [
-      { id: uuidv4(), text: "", value: 0.0 },
-      { id: uuidv4(), text: "", value: 0.0 },
-      { id: uuidv4(), text: "", value: 0.0 },
-      { id: uuidv4(), text: "", value: 0.0 },
+      { id: "", text: "", value: 0.0 },
+      { id: "", text: "", value: 0.0 },
+      { id: "", text: "", value: 0.0 },
+      { id: "", text: "", value: 0.0 },
     ],
   })
 
@@ -55,6 +55,20 @@ export default function QuestionForm({
     })
   }
 
+  const handleOptionValueChange = (index: number, value: number) => {
+  setFormData((prev) => {
+    const newOptions = [...prev.options]
+    newOptions[index] = {
+      ...newOptions[index],
+      value,
+    }
+    return {
+      ...prev,
+      options: newOptions,
+    }
+  })
+}
+
   const handleSelectChange = (field: string, value: string) => {
     setFormData((prev) => ({
       ...prev,
@@ -62,7 +76,7 @@ export default function QuestionForm({
     }))
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
     // Validar se todas as opções têm texto
@@ -79,7 +93,7 @@ export default function QuestionForm({
       return
     }
     setIsSubmitting(true)
-    await onSubmit(formData)
+    onSubmit(formData)
     setIsSubmitting(false)
   }
 
@@ -132,15 +146,15 @@ export default function QuestionForm({
       <div className="space-y-4">
         <Label>Alternativas (4 opções)</Label>
         {formData.options.map((option, index) => (
-          <div key={option.id} className="grid grid-cols-12 gap-4 items-center">
+          <div key={index} className="grid grid-cols-12 gap-4 items-center">
             <div className="col-span-1">
               <div className="flex items-center justify-center h-10 w-10 rounded-full bg-slate-100">{index + 1}</div>
             </div>
             <div className="col-span-8">
-              <RichTextEditor
-                value={formData.text}
-                onChange={handleTextChange}
-                placeholder="Digite o enunciado da questão..."
+              <Input
+                value={option.text}
+                onChange={(e) => handleOptionTextChange(index, e.target.value)}
+                placeholder={`Texto da opção ${index + 1}`}
               />
             </div>
             <div className="col-span-3">

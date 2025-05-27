@@ -77,3 +77,16 @@ Totalmente errada: 0
 Parcialmente certa: 40 
 Quase certa: 70 
 Totalmente certa: 100 
+
+## O que fazer
+
+- Corrigir modal das questões
+
+- Verificar CRUD de questões:
+ - Criar
+ - Listagem
+ - Editar
+ - Deletar
+ - Fechar modal da questão ao fechar
+
+- Corrigir lógica do teste
