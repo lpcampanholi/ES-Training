@@ -1,9 +1,17 @@
-import { NextResponse } from "next/server"
+import { type NextRequest, NextResponse } from "next/server"
 import prisma from "@/lib/prisma"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
+import type { Question, UpdateQuestionDTO } from "@/types"
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+interface RouteParams {
+  params: { id: string }
+}
+
+export async function GET(
+  request: NextRequest,
+  { params }: RouteParams,
+): Promise<NextResponse<Question | { error: string }>> {
   try {
     const question = await prisma.question.findUnique({
       where: {
@@ -25,7 +33,10 @@ export async function GET(request: Request, { params }: { params: { id: string }
   }
 }
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(
+  request: NextRequest,
+  { params }: RouteParams,
+): Promise<NextResponse<Question | { error: string }>> {
   try {
     const session = await getServerSession(authOptions)
 
@@ -33,7 +44,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       return NextResponse.json({ error: "Não autorizado" }, { status: 401 })
     }
 
-    const body = await request.json()
+    const body: UpdateQuestionDTO = await request.json()
     const { text, subject, level, options } = body
 
     if (!text || !subject || !level || !options || options.length !== 4) {
@@ -41,7 +52,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     }
 
     // Validar se pelo menos uma opção tem valor 10.0 (totalmente correta)
-    const hasCorrectOption = options.some((option: any) => option.value === 10.0)
+    const hasCorrectOption = options.some((option) => option.value === 10.0)
     if (!hasCorrectOption) {
       return NextResponse.json(
         { error: "Pelo menos uma opção deve ser totalmente correta (valor 10.0)" },
@@ -51,7 +62,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
     // Validar se todas as opções têm valores válidos
     const validValues = [0.0, 4.0, 7.0, 10.0]
-    const allOptionsHaveValidValues = options.every((option: any) => validValues.includes(option.value))
+    const allOptionsHaveValidValues = options.every((option) => validValues.includes(option.value))
     if (!allOptionsHaveValidValues) {
       return NextResponse.json(
         { error: "Todas as opções devem ter valores válidos (0.0, 4.0, 7.0 ou 10.0)" },
@@ -99,14 +110,17 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       },
     })
 
-    return NextResponse.json(updatedQuestion)
+    return NextResponse.json(updatedQuestion!)
   } catch (error) {
     console.error("Error updating question:", error)
     return NextResponse.json({ error: "Erro ao atualizar questão" }, { status: 500 })
   }
 }
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(
+  request: NextRequest,
+  { params }: RouteParams,
+): Promise<NextResponse<{ success: boolean } | { error: string }>> {
   try {
     const session = await getServerSession(authOptions)
 

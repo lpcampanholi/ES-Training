@@ -5,23 +5,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button"
 import { Award, ArrowRight } from "lucide-react"
 import confetti from "canvas-confetti"
-import { Level } from "@/types"
-
-// Função para obter o nome formatado do nível
-const getLevelName = (level: Level): string => {
-  switch (level) {
-    case "fundamental":
-      return "Fundamental"
-    case "essencial":
-      return "Essencial"
-    case "avancado":
-      return "Avançado"
-    case "profissional":
-      return "Profissional"
-    default:
-      return level
-  }
-}
+import { getLevelName } from "@/utils"
+import type { Level } from "@/types"
 
 export interface CelebrationModalProps {
   isOpen: boolean

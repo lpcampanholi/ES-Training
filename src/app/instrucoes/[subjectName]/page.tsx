@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button"
 import { ArrowLeft, ArrowRight, CheckCircle, Clock, Brain, Award } from "lucide-react"
 import Link from "next/link"
 import { toast } from "sonner"
-import { TestService, SubjectService } from "@/services"
+import { TestService } from "@/services/test-service"
+import { SubjectService } from "@/services/subject-service"
 import type { Level, Subject, SubjectUI } from "@/types"
 
 export default function InstrucoesPage({

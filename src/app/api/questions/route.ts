@@ -1,23 +1,19 @@
-import { NextResponse } from "next/server"
+import { type NextRequest, NextResponse } from "next/server"
 import prisma from "@/lib/prisma"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
+import type { Question, CreateQuestionDTO, QuestionFilters } from "@/types"
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest): Promise<NextResponse<Question[] | { error: string }>> {
   try {
     const { searchParams } = new URL(request.url)
-    const subject = searchParams.get("subject")
-    const level = searchParams.get("level")
+    const subject = searchParams.get("subject") as QuestionFilters["subject"]
+    const level = searchParams.get("level") as QuestionFilters["level"]
 
     const where: any = {}
 
-    if (subject) {
-      where.subject = subject
-    }
-
-    if (level) {
-      where.level = level
-    }
+    if (subject) where.subject = subject
+    if (level) where.level = level
 
     const questions = await prisma.question.findMany({
       where,
@@ -36,7 +32,7 @@ export async function GET(request: Request) {
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest): Promise<NextResponse<Question | { error: string }>> {
   try {
     const session = await getServerSession(authOptions)
 
@@ -44,7 +40,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Não autorizado" }, { status: 401 })
     }
 
-    const body = await request.json()
+    const body: CreateQuestionDTO = await request.json()
     const { text, subject, level, options } = body
 
     if (!text || !subject || !level || !options || options.length !== 4) {
@@ -52,7 +48,7 @@ export async function POST(request: Request) {
     }
 
     // Validar se pelo menos uma opção tem valor 10.0 (totalmente correta)
-    const hasCorrectOption = options.some((option: any) => option.value === 10.0)
+    const hasCorrectOption = options.some((option) => option.value === 10.0)
     if (!hasCorrectOption) {
       return NextResponse.json(
         { error: "Pelo menos uma opção deve ser totalmente correta (valor 10.0)" },
@@ -62,7 +58,7 @@ export async function POST(request: Request) {
 
     // Validar se todas as opções têm valores válidos
     const validValues = [0.0, 4.0, 7.0, 10.0]
-    const allOptionsHaveValidValues = options.every((option: any) => validValues.includes(option.value))
+    const allOptionsHaveValidValues = options.every((option) => validValues.includes(option.value))
     if (!allOptionsHaveValidValues) {
       return NextResponse.json(
         { error: "Todas as opções devem ter valores válidos (0.0, 4.0, 7.0 ou 10.0)" },
@@ -77,7 +73,7 @@ export async function POST(request: Request) {
         subject,
         level,
         options: {
-          create: options.map((option: any) => ({
+          create: options.map((option) => ({
             text: option.text,
             value: option.value,
           })),

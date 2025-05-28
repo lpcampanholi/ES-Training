@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -14,64 +14,81 @@ model User {
   id        String   @id @default(cuid())
   name      String?
   email     String   @unique
-  password  String
+  password  String?
   image     String?
   role      Role     @default(SELLER)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  userTests UserTest[]
 
   @@map("users")
 }
 
 model Question {
   id        String   @id @default(cuid())
-  text      String   @db.Text
+  text      String
   subject   Subject
   level     Level
-  options   Option[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  options Option[]
 
   @@map("questions")
 }
 
 model Option {
   id         String   @id @default(cuid())
-  text       String   @db.Text
-  value      Float    // 0.0, 4.0, 7.0, 10.0
+  text       String
+  value      Float // 0.0, 4.0, 7.0, 10.0
   questionId String
-  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
 
   @@map("options")
 }
 
 model UserTest {
-  id         String   @id @default(cuid())
+  id         String    @id @default(cuid())
   userId     String
   score      Float?
-  answers    Json     // Armazenar as respostas como JSON {questionId: optionId}
-  questions  Json     // Armazenar os IDs das questões como JSON array
+  answers    String    @default("{}")
+  questions  String    @default("[]")
   subject    Subject
   level      Level
-  startedAt  DateTime @default(now())
+  startedAt  DateTime  @default(now())
   finishedAt DateTime?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("user_tests")
 }
 
 model Lead {
-  id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  phone     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id              String     @id @default(cuid())
+  name            String
+  email           String     @unique
+  phone           String?
+  testLevel       Level?     // Nível alcançado no teste
+  testSubject     Subject?   // Disciplina do teste
+  fromTest        Boolean    @default(false) // Se veio do teste de nivelamento
+  stage           LeadStage  @default(PENDENTE) // Etapa do lead
+  observations    String?    // Campo de observações
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
 
   @@map("leads")
+}
+
+enum Role {
+  SELLER
+  MASTER
+  ADMIN
 }
 
 enum Subject {
@@ -81,15 +98,15 @@ enum Subject {
   powerbi
 }
 
-enum Role {
-  SELLER
-  MASTER
-  ADMIN
-}
-
 enum Level {
   fundamental
   essencial
   avancado
   profissional
+}
+
+enum LeadStage {
+  PENDENTE
+  CONTRATADO
+  CONVERTIDO
 }

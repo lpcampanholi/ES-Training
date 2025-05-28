@@ -6,7 +6,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import QuestionForm from "@/components/question-form"
 import parse from "html-react-parser"
 import { Badge } from "@/components/ui/badge"
-import { type Question, type QuestionFormData, Level } from "@/types"
+import { getLevelColor, getValueColor, getValueText } from "@/utils"
+import { Question, QuestionFormData } from "@/types"
 
 interface QuestionItemProps {
   question: Question
@@ -18,51 +19,6 @@ interface QuestionItemProps {
 export default function QuestionItem({ question, index, onDelete, onUpdate }: QuestionItemProps) {
   const handleUpdate = (data: QuestionFormData): void => {
     onUpdate(question.id, data)
-  }
-
-  const getLevelColor = (level: Level): string => {
-    switch (level) {
-      case Level.fundamental:
-        return "bg-green-100 text-green-800"
-      case Level.essencial:
-        return "bg-blue-100 text-blue-800"
-      case Level.avancado:
-        return "bg-purple-100 text-purple-800"
-      case Level.profissional:
-        return "bg-amber-100 text-amber-800"
-      default:
-        return "bg-gray-100 text-gray-800"
-    }
-  }
-
-  const getValueColor = (value: number): string => {
-    switch (value) {
-      case 0:
-        return "bg-red-100 text-red-800"
-      case 4:
-        return "bg-yellow-100 text-yellow-800"
-      case 7:
-        return "bg-blue-100 text-blue-800"
-      case 10:
-        return "bg-green-100 text-green-800"
-      default:
-        return "bg-gray-100 text-gray-800"
-    }
-  }
-
-  const getValueText = (value: number): string => {
-    switch (value) {
-      case 0:
-        return "Totalmente errada"
-      case 4:
-        return "Parcialmente certa"
-      case 7:
-        return "Quase certa"
-      case 10:
-        return "Totalmente certa"
-      default:
-        return value.toString()
-    }
   }
 
   return (

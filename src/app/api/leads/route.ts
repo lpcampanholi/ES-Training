@@ -1,9 +1,10 @@
-import { NextResponse } from "next/server"
+import { type NextRequest, NextResponse } from "next/server"
 import prisma from "@/lib/prisma"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
+import type { Lead, CreateLeadDTO } from "@/types"
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest): Promise<NextResponse<Lead[] | { error: string }>> {
   try {
     const session = await getServerSession(authOptions)
 
@@ -11,7 +12,19 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Não autorizado" }, { status: 401 })
     }
 
+    const { searchParams } = new URL(request.url)
+    const stage = searchParams.get("stage")
+    const testSubject = searchParams.get("testSubject")
+    const fromTest = searchParams.get("fromTest")
+
+    const where: any = {}
+
+    if (stage) where.stage = stage
+    if (testSubject) where.testSubject = testSubject
+    if (fromTest !== null) where.fromTest = fromTest === "true"
+
     const leads = await prisma.lead.findMany({
+      where,
       orderBy: {
         createdAt: "desc",
       },
@@ -24,10 +37,10 @@ export async function GET(request: Request) {
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest): Promise<NextResponse<Lead | { error: string }>> {
   try {
-    const body = await request.json()
-    const { name, email, phone } = body
+    const body: CreateLeadDTO = await request.json()
+    const { name, email, phone, testLevel, testSubject, fromTest, stage, observations } = body
 
     if (!name || !email) {
       return NextResponse.json({ error: "Nome e email são obrigatórios" }, { status: 400 })
@@ -49,6 +62,11 @@ export async function POST(request: Request) {
         name,
         email,
         phone,
+        testLevel,
+        testSubject,
+        fromTest: fromTest || false,
+        stage: stage || "PENDENTE",
+        observations,
       },
     })
 

@@ -1,9 +1,10 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import prisma from "@/lib/prisma"
+import { GenerateTestDTO, GenerateTestResponse } from "@/types"
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest): Promise<NextResponse<GenerateTestResponse | { error: string }>> {
   try {
-    const body = await request.json()
+    const body: GenerateTestDTO = await request.json()
     const { subject, initialLevel = "fundamental", userId } = body
 
     if (!subject || !userId) {

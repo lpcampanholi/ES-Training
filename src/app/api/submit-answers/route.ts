@@ -1,5 +1,7 @@
-import { NextResponse } from "next/server"
+import { type NextRequest, NextResponse } from "next/server"
 import prisma from "@/lib/prisma"
+import type { SubmitAnswersDTO, SubmitAnswersResponse, Level } from "@/types"
+import { getNextLevel } from "@/utils"
 
 // Função para verificar se o usuário pode atingir a média 8.0
 function canReachAverage(currentSum: number, currentCount: number, remainingQuestions: number): boolean {
@@ -16,22 +18,8 @@ function canReachAverage(currentSum: number, currentCount: number, remainingQues
   return maxPossibleAverage >= 8.0
 }
 
-// Função para determinar o próximo nível
-function getNextLevel(currentLevel: string): string {
-  switch (currentLevel) {
-    case "fundamental":
-      return "essencial"
-    case "essencial":
-      return "avancado"
-    case "avancado":
-      return "profissional"
-    default:
-      return currentLevel
-  }
-}
-
 // Função para obter o nível recomendado com base na média
-function getRecommendedLevel(average: number, currentLevel: string): string {
+function getRecommendedLevel(average: number, currentLevel: Level): Level {
   // Se a média for >= 8.0, o usuário passa para o próximo nível
   if (average >= 8.0) {
     return getNextLevel(currentLevel)
@@ -41,11 +29,10 @@ function getRecommendedLevel(average: number, currentLevel: string): string {
   return currentLevel
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest): Promise<NextResponse<SubmitAnswersResponse | { error: string }>> {
   try {
-    const body = await request.json()
+    const body: SubmitAnswersDTO = await request.json()
     const { testId, answers, isComplete = false } = body
-    console.log(answers)
 
     if (!testId || !answers) {
       return NextResponse.json({ error: "ID do teste e respostas são obrigatórios" }, { status: 400 })
@@ -88,12 +75,13 @@ export async function POST(request: Request) {
 
     // Calcular a pontuação atual
     let totalScore = 0
+    const answersObj = JSON.parse(answers)
     const answeredQuestions = []
 
     for (const question of questions) {
-      if (answers[question.id]) {
+      if (answersObj[question.id]) {
         // Encontrar a opção selecionada
-        const selectedOption = question.options.find((opt) => opt.id === answers[question.id])
+        const selectedOption = question.options.find((opt) => opt.id === answersObj[question.id])
         if (selectedOption) {
           totalScore += selectedOption.value
           answeredQuestions.push(question)

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { QuestionService } from "@/services"
+import { QuestionService } from "@/services/question-service"
 import { Question, QuestionFilters } from "@/types"
 
 export function useQuestions(filters?: QuestionFilters) {

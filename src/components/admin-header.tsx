@@ -21,17 +21,17 @@ export default function AdminHeader({ user }: { user: User }) {
     <header className="border-b bg-white">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-12">
-          <Link href="/admin/dashboard" className="font-bold text-xl">
+          <Link href="/admin/questions" className="font-bold text-xl">
             <Image src="/logo.png" alt="Excel Solutions" width={110} height={20} className="h-10 w-auto" priority={false} />
           </Link>
           <nav className="hidden md:flex items-center gap-6">
-            <Link href="/admin/dashboard/questions" className="text-slate-700 transition-colors hover:text-blue-600">
+            <Link href="/admin/questions" className="text-slate-700 transition-colors hover:text-blue-600">
               Questões
             </Link>
-            <Link href="/admin/dashboard/leads" className="text-slate-700 transition-colors hover:text-blue-600">
+            <Link href="/admin/leads" className="text-slate-700 transition-colors hover:text-blue-600">
               Leads
             </Link>
-            <Link href="/admin/dashboard/users" className="text-slate-700 transition-colors hover:text-blue-600">
+            <Link href="/admin/users" className="text-slate-700 transition-colors hover:text-blue-600">
               Usuários
             </Link>
           </nav>
@@ -55,9 +55,9 @@ export default function AdminHeader({ user }: { user: User }) {
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link href="/admin/dashboard" className="cursor-pointer">
+                <Link href="/admin/questions" className="cursor-pointer">
                   <BookOpen className="mr-2 h-4 w-4" />
-                  <span>Testes</span>
+                  <span>Questões</span>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>

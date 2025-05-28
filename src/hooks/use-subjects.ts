@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { SubjectService } from "@/services"
+import { SubjectService } from "@/services/subject-service"
 import type { SubjectUI } from "@/types"
 
 export function useSubjects() {

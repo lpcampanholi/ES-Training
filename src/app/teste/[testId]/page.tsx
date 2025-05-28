@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, use } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Clock, AlertCircle } from "lucide-react"
@@ -11,8 +11,9 @@ import parse from "html-react-parser"
 import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { CelebrationModal } from "@/components/celebration-modal"
-import { TestService } from "@/services"
-import type { Question, Level } from "@/types"
+import { TestService } from "@/services/test-service"
+import { getLevelColor, getLevelName } from "@/utils"
+import type { Question, Level, TestData } from "@/types"
 
 export default function TestePage({
   params,
@@ -20,9 +21,8 @@ export default function TestePage({
   params: Promise<{ testId: string }>
 }) {
   const router = useRouter()
-  const { testId } = use(params)
 
-  const [testData, setTestData] = useState<any>(null)
+  const [testData, setTestData] = useState<TestData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
@@ -31,7 +31,7 @@ export default function TestePage({
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [currentBatch, setCurrentBatch] = useState<Question[]>([])
   const [batchNumber, setBatchNumber] = useState(1)
-  const [currentLevel, setCurrentLevel] = useState<Level>("fundamental")
+  const [currentLevel, setCurrentLevel] = useState<Level>("fundamental" as Level)
   const [message, setMessage] = useState<string | null>(null)
   const [answeredCount, setAnsweredCount] = useState(0)
   const [currentAverage, setCurrentAverage] = useState(0)
@@ -48,7 +48,7 @@ export default function TestePage({
     const fetchTestData = async () => {
       try {
         // Buscar o teste inicial
-        const data = await TestService.getTestById(testId)
+        const data = await TestService.getTestById(params.testId)
         setTestData(data)
         setCurrentBatch(data.questions)
         setCurrentLevel(data.currentLevel)
@@ -61,7 +61,7 @@ export default function TestePage({
     }
 
     fetchTestData()
-  }, [testId])
+  }, [params.testId])
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -180,38 +180,6 @@ export default function TestePage({
     }
   }
 
-  // Função para obter a cor do badge com base no nível
-  const getLevelColor = (level: Level): string => {
-    switch (level) {
-      case "fundamental":
-        return "bg-green-100 text-green-800"
-      case "essencial":
-        return "bg-blue-100 text-blue-800"
-      case "avancado":
-        return "bg-purple-100 text-purple-800"
-      case "profissional":
-        return "bg-amber-100 text-amber-800"
-      default:
-        return "bg-gray-100 text-gray-800"
-    }
-  }
-
-  // Função para obter o nome formatado do nível
-  const getLevelName = (level: Level): string => {
-    switch (level) {
-      case "fundamental":
-        return "Fundamental"
-      case "essencial":
-        return "Essencial"
-      case "avancado":
-        return "Avançado"
-      case "profissional":
-        return "Profissional"
-      default:
-        return level
-    }
-  }
-
   if (isLoading) {
     return (
       <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-gradient-to-b from-slate-50 to-slate-100">
@@ -275,7 +243,7 @@ export default function TestePage({
           <div className="rich-text-content mb-6">{parse(currentQuestion.text)}</div>
 
           <div className="space-y-3">
-            {currentQuestion.options.map((option, index) => (
+            {currentQuestion.options.map((option, index: number) => (
               <button
                 key={option.id}
                 className={`w-full p-4 text-left rounded-xl transition-all ${

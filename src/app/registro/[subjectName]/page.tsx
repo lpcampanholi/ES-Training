@@ -9,7 +9,8 @@ import { Label } from "@/components/ui/label"
 import { ArrowLeft, User, Mail, Phone, ArrowRight } from "lucide-react"
 import Link from "next/link"
 import { toast } from "sonner"
-import { LeadService, SubjectService } from "@/services"
+import { LeadService } from "@/services/lead-service"
+import { SubjectService } from "@/services/subject-service"
 import type { CreateLeadDTO, Level, SubjectUI } from "@/types"
 
 export default function RegistroPage({

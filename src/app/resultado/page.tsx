@@ -8,12 +8,14 @@ import confetti from "canvas-confetti"
 import { useEffect } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { getLevelName, getLevelColor, getLevelDescription } from "@/utils"
+import { Level } from "@/types"
 
 export default function ResultadoPage() {
   const searchParams = useSearchParams()
   const score = searchParams.get("score") || "0,0"
-  // const testId = searchParams.get("testId")
-  const recommendedLevel = searchParams.get("level") || "fundamental"
+  const testId = searchParams.get("testId")
+  const recommendedLevel = (searchParams.get("level") || "fundamental") as Level
   const scoreNum = Number.parseFloat(score.replace(",", "."))
 
   useEffect(() => {
@@ -41,59 +43,6 @@ export default function ResultadoPage() {
     return "Continue estudando para melhorar seu conhecimento."
   }
 
-  const getLevelBadge = (level: string) => {
-    let color = ""
-
-    switch (level) {
-      case "fundamental":
-        color = "bg-green-100 text-green-800"
-        break
-      case "essencial":
-        color = "bg-blue-100 text-blue-800"
-        break
-      case "avancado":
-        color = "bg-purple-100 text-purple-800"
-        break
-      case "profissional":
-        color = "bg-amber-100 text-amber-800"
-        break
-      default:
-        color = "bg-gray-100 text-gray-800"
-    }
-
-    return <Badge className={color}>{getLevelName(level)}</Badge>
-  }
-
-  const getLevelName = (level: string) => {
-    switch (level) {
-      case "fundamental":
-        return "Fundamental"
-      case "essencial":
-        return "Essencial"
-      case "avancado":
-        return "Avançado"
-      case "profissional":
-        return "Profissional"
-      default:
-        return level
-    }
-  }
-
-  const getLevelDescription = (level: string) => {
-    switch (level) {
-      case "fundamental":
-        return "Neste nível, você aprenderá os conceitos básicos e fundamentos essenciais para iniciar sua jornada."
-      case "essencial":
-        return "Neste nível, você aprofundará seus conhecimentos e aprenderá técnicas mais avançadas."
-      case "avancado":
-        return "Neste nível, você dominará técnicas avançadas e resolverá problemas complexos."
-      case "profissional":
-        return "Neste nível, você se tornará um especialista com habilidades de nível profissional."
-      default:
-        return "Aprenda mais sobre este nível na Formação SmartES."
-    }
-  }
-
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-gradient-to-b from-slate-50 to-slate-100">
       <div className="w-full max-w-4xl p-8 bg-white rounded-2xl shadow-sm">
@@ -105,7 +54,9 @@ export default function ResultadoPage() {
           <h2 className="text-3xl font-bold text-slate-800 mb-4">Parabéns por concluir o teste!</h2>
           <p className="text-slate-600 mb-8">{getMessage()}</p>
 
-          <div className="mb-6 flex items-center gap-2">{getLevelBadge(recommendedLevel)}</div>
+          <div className="mb-6 flex items-center gap-2">
+            <Badge className={getLevelColor(recommendedLevel)}>{getLevelName(recommendedLevel)}</Badge>
+          </div>
 
           <div className="mb-2">Sua nota final é</div>
 

@@ -1,7 +1,15 @@
-import { NextResponse } from "next/server"
+import { type NextRequest, NextResponse } from "next/server"
 import prisma from "@/lib/prisma"
+import type { TestResultResponse } from "@/types"
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+interface RouteParams {
+  params: { id: string }
+}
+
+export async function GET(
+  request: NextRequest,
+  { params }: RouteParams,
+): Promise<NextResponse<TestResultResponse | { error: string }>> {
   try {
     const userTest = await prisma.userTest.findUnique({
       where: {

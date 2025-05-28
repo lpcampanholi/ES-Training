@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { LeadService } from "@/services"
+import { LeadService } from "@/services/lead-service"
 import type { Lead } from "@/types"
 
 export function useLeads() {

@@ -20,6 +20,12 @@ export enum Role {
   ADMIN = "ADMIN",
 }
 
+export enum LeadStage {
+  PENDENTE = "PENDENTE",
+  CONTRATADO = "CONTRATADO",
+  CONVERTIDO = "CONVERTIDO",
+}
+
 // Tipos básicos
 export interface User {
   id: string
@@ -71,6 +77,11 @@ export interface Lead {
   name: string
   email: string
   phone: string | null
+  testLevel: Level | null
+  testSubject: Subject | null
+  fromTest: boolean
+  stage: LeadStage
+  observations: string | null
   createdAt: Date
   updatedAt: Date
 }
@@ -80,6 +91,22 @@ export interface CreateLeadDTO {
   name: string
   email: string
   phone?: string
+  testLevel?: Level
+  testSubject?: Subject
+  fromTest?: boolean
+  stage?: LeadStage
+  observations?: string
+}
+
+export interface UpdateLeadDTO {
+  name?: string
+  email?: string
+  phone?: string
+  testLevel?: Level
+  testSubject?: Subject
+  fromTest?: boolean
+  stage?: LeadStage
+  observations?: string
 }
 
 export interface CreateQuestionDTO {
@@ -139,6 +166,20 @@ export interface TestResultResponse {
   currentLevel: Level
 }
 
+// API Response Types
+export interface ApiResponse<T = any> {
+  data?: T
+  error?: string
+  message?: string
+}
+
+export interface PaginatedResponse<T> {
+  data: T[]
+  total: number
+  page: number
+  limit: number
+}
+
 // Tipos para componentes
 export interface QuestionFormData {
   text: string
@@ -159,12 +200,28 @@ export interface AdminTestFormData {
   subject: Subject
 }
 
+export interface LeadFormData {
+  name: string
+  email: string
+  phone: string
+  testLevel: Level | null
+  testSubject: Subject | null
+  fromTest: boolean
+  stage: LeadStage
+  observations: string
+}
+
 // Tipos para tabelas
 export interface LeadTableData {
   id: string
   name: string
   email: string
   phone: string | null
+  testLevel: Level | null
+  testSubject: Subject | null
+  fromTest: boolean
+  stage: LeadStage
+  observations: string | null
   createdAt: string
 }
 
@@ -193,6 +250,12 @@ export interface QuestionFilters {
 export interface TestFilters {
   subjectId?: string
   level?: Level
+}
+
+export interface LeadFilters {
+  stage?: LeadStage
+  testSubject?: Subject
+  fromTest?: boolean
 }
 
 // Tipos para hooks
@@ -254,8 +317,24 @@ export interface SubjectUI {
   description: string
 }
 
+// Tipo para o modal de celebração
+export interface CelebrationModalProps {
+  isOpen: boolean
+  onClose: () => void
+  previousLevel: Level
+  nextLevel: Level
+  message?: string
+}
+
 // Tipo para as instruções do teste
 export interface TestInstructionsProps {
   subject: Subject
   onStart: () => void
+}
+
+// Tipos específicos para o teste
+export interface TestData {
+  testId: string
+  questions: Question[]
+  currentLevel: Level
 }

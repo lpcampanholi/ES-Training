@@ -22,7 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Level, Question, QuestionFilters, QuestionFormData, Subject } from "@/types"
-import { QuestionService } from "@/services"
+import { QuestionService } from "@/services/question-service"
 
 export default function QuestionsPage() {
   const [questions, setQuestions] = useState<Question[]>([])
