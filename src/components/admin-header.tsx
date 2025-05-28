@@ -14,8 +14,9 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { BookOpen, Users, LogOut } from "lucide-react"
 import Image from "next/image"
+import { User } from "@/types"
 
-export default function AdminHeader({ user }: { user: any }) {
+export default function AdminHeader({ user }: { user: User }) {
   return (
     <header className="border-b bg-white">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
@@ -40,7 +41,7 @@ export default function AdminHeader({ user }: { user: any }) {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src={user.image || "/user.png"} alt={user.name} />
+                  <AvatarImage src={user.image || "/user.png"} alt={'icone do usuario'} />
                   <AvatarFallback>{user.name?.charAt(0)}</AvatarFallback>
                 </Avatar>
               </Button>

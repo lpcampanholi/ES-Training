@@ -1,47 +1,41 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { RichTextEditor } from "@/components/ui/rich-text-editor"
+import { QuestionFormData, Subject, Level } from "@/types"
 import { Input } from "./ui/input"
 
-// Valores possíveis para as opções
-const optionValues = [0.0, 4.0, 7.0, 10.0]
-
-export default function QuestionForm({
-  initialData,
-  onSubmit,
-  isEditing = false,
-}: {
-  initialData?: any
-  onSubmit: (data: any) => void
+interface QuestionFormProps {
+  initialData?: Partial<QuestionFormData>
+  onSubmit: (data: QuestionFormData) => void
   isEditing?: boolean
-}) {
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [formData, setFormData] = useState({
+}
+
+export default function QuestionForm({ initialData, onSubmit, isEditing = false }: QuestionFormProps) {
+  const [formData, setFormData] = useState<QuestionFormData>({
     text: initialData?.text || "",
-    subject: initialData?.subject || "excel",
-    level: initialData?.level || "fundamental",
+    subject: initialData?.subject || Subject.excel,
+    level: initialData?.level || Level.essencial,
     options: initialData?.options || [
-      { id: "", text: "", value: 0.0 },
-      { id: "", text: "", value: 0.0 },
-      { id: "", text: "", value: 0.0 },
-      { id: "", text: "", value: 0.0 },
+      { text: "", value: 0.0 },
+      { text: "", value: 0.0 },
+      { text: "", value: 0.0 },
+      { text: "", value: 0.0 },
     ],
   })
 
-  const handleTextChange = (value: string) => {
+  const handleTextChange = (value: string): void => {
     setFormData((prev) => ({
       ...prev,
       text: value,
     }))
   }
 
-  const handleOptionTextChange = (index: number, value: string) => {
+  const handleOptionTextChange = (index: number, value: string): void => {
     setFormData((prev) => {
       const newOptions = [...prev.options]
       newOptions[index] = {
@@ -55,28 +49,28 @@ export default function QuestionForm({
     })
   }
 
-  const handleOptionValueChange = (index: number, value: number) => {
-  setFormData((prev) => {
-    const newOptions = [...prev.options]
-    newOptions[index] = {
-      ...newOptions[index],
-      value,
-    }
-    return {
-      ...prev,
-      options: newOptions,
-    }
-  })
-}
+  const handleOptionValueChange = (index: number, value: number): void => {
+    setFormData((prev) => {
+      const newOptions = [...prev.options]
+      newOptions[index] = {
+        ...newOptions[index],
+        value,
+      }
+      return {
+        ...prev,
+        options: newOptions,
+      }
+    })
+  }
 
-  const handleSelectChange = (field: string, value: string) => {
+  const handleSelectChange = (field: keyof Pick<QuestionFormData, "subject" | "level">, value: string): void => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
     }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent): void => {
     e.preventDefault()
 
     // Validar se todas as opções têm texto
@@ -92,9 +86,8 @@ export default function QuestionForm({
       alert("Pelo menos uma opção deve ser totalmente correta (valor 10.0)")
       return
     }
-    setIsSubmitting(true)
+
     onSubmit(formData)
-    setIsSubmitting(false)
   }
 
   return (
@@ -107,10 +100,10 @@ export default function QuestionForm({
               <SelectValue placeholder="Selecione a disciplina" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="excel">Excel</SelectItem>
-              <SelectItem value="sql">SQL</SelectItem>
-              <SelectItem value="python">Python</SelectItem>
-              <SelectItem value="powerbi">Power BI</SelectItem>
+              <SelectItem value={Subject.excel}>Excel</SelectItem>
+              <SelectItem value={Subject.sql}>SQL</SelectItem>
+              <SelectItem value={Subject.python}>Python</SelectItem>
+              <SelectItem value={Subject.powerbi}>Power BI</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -122,10 +115,10 @@ export default function QuestionForm({
               <SelectValue placeholder="Selecione o nível" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="fundamental">Fundamental</SelectItem>
-              <SelectItem value="essencial">Essencial</SelectItem>
-              <SelectItem value="avancado">Avançado</SelectItem>
-              <SelectItem value="profissional">Profissional</SelectItem>
+              <SelectItem value={Level.fundamental}>Fundamental</SelectItem>
+              <SelectItem value={Level.essencial}>Essencial</SelectItem>
+              <SelectItem value={Level.avancado}>Avançado</SelectItem>
+              <SelectItem value={Level.profissional}>Profissional</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -133,11 +126,11 @@ export default function QuestionForm({
 
       <div className="space-y-2">
         <Label htmlFor="text">Enunciado da Questão</Label>
-          <RichTextEditor
-            value={formData.text}
-            onChange={handleTextChange}
-            placeholder="Digite o enunciado da questão..."
-          />
+        <RichTextEditor
+          value={formData.text}
+          onChange={handleTextChange}
+          placeholder="Digite o enunciado da questão..."
+        />
         <p className="text-sm text-slate-500 mt-1">
           Use o editor acima para formatar o texto, adicionar imagens, tabelas e outros elementos.
         </p>
@@ -154,7 +147,7 @@ export default function QuestionForm({
               <Input
                 value={option.text}
                 onChange={(e) => handleOptionTextChange(index, e.target.value)}
-                placeholder={`Texto da opção ${index + 1}`}
+                placeholder={`Alternativa ${index + 1}`}
               />
             </div>
             <div className="col-span-3">
@@ -178,9 +171,7 @@ export default function QuestionForm({
       </div>
 
       <div className="flex justify-end">
-        <Button type="submit" loading={isSubmitting} disabled={isSubmitting}>
-          {isEditing ? "Salvar Alterações" : "Adicionar Questão"}
-        </Button>
+        <Button type="submit">{isEditing ? "Salvar Alterações" : "Adicionar Questão"}</Button>
       </div>
     </form>
   )

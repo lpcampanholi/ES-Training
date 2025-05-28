@@ -3,7 +3,7 @@
 import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { CheckCircle, Home, Share2, Award, ArrowRight } from "lucide-react"
+import { CheckCircle, Home, Award, ArrowRight } from "lucide-react"
 import confetti from "canvas-confetti"
 import { useEffect } from "react"
 import { Card, CardContent } from "@/components/ui/card"
@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge"
 export default function ResultadoPage() {
   const searchParams = useSearchParams()
   const score = searchParams.get("score") || "0,0"
-  const testId = searchParams.get("testId")
+  // const testId = searchParams.get("testId")
   const recommendedLevel = searchParams.get("level") || "fundamental"
   const scoreNum = Number.parseFloat(score.replace(",", "."))
 
@@ -134,7 +134,7 @@ export default function ResultadoPage() {
           </Card>
 
           <div className="flex flex-wrap gap-4 justify-center">
-            <Link href="/iniciar">
+            <Link href="/disciplinas">
               <Button className="rounded-xl bg-green-600 hover:bg-green-700 px-6 py-6 h-auto">
                 <Award className="w-5 h-5 mr-2" />
                 Fazer outro teste
@@ -147,11 +147,6 @@ export default function ResultadoPage() {
                 Voltar para o início
               </Button>
             </Link>
-
-            {/* <Button variant="outline" className="rounded-xl px-6 py-6 h-auto">
-              <Share2 className="w-5 h-5 mr-2" />
-              Compartilhar resultado
-            </Button> */}
           </div>
         </div>
       </div>

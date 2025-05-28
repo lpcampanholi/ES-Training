@@ -10,6 +10,9 @@ import { formatTime } from "@/lib/utils"
 import parse from "html-react-parser"
 import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { CelebrationModal } from "@/components/celebration-modal"
+import { TestService } from "@/services"
+import type { Question, Level } from "@/types"
 
 export default function TestePage({
   params,
@@ -26,22 +29,26 @@ export default function TestePage({
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, string>>({})
   const [timeLeft, setTimeLeft] = useState(1200) // 20 minutos em segundos
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [currentBatch, setCurrentBatch] = useState<any[]>([])
+  const [currentBatch, setCurrentBatch] = useState<Question[]>([])
   const [batchNumber, setBatchNumber] = useState(1)
-  const [currentLevel, setCurrentLevel] = useState<string>("fundamental")
+  const [currentLevel, setCurrentLevel] = useState<Level>("fundamental")
   const [message, setMessage] = useState<string | null>(null)
   const [answeredCount, setAnsweredCount] = useState(0)
   const [currentAverage, setCurrentAverage] = useState(0)
+
+  // Estado para o modal de celebração
+  const [celebrationModal, setCelebrationModal] = useState({
+    isOpen: false,
+    previousLevel: "fundamental" as Level,
+    nextLevel: "essencial" as Level,
+    message: "",
+  })
 
   useEffect(() => {
     const fetchTestData = async () => {
       try {
         // Buscar o teste inicial
-        const response = await fetch(`/api/tests/${testId}`)
-        if (!response.ok) {
-          throw new Error("Erro ao buscar teste")
-        }
-        const data = await response.json()
+        const data = await TestService.getTestById(testId)
         setTestData(data)
         setCurrentBatch(data.questions)
         setCurrentLevel(data.currentLevel)
@@ -103,51 +110,48 @@ export default function TestePage({
     setIsSubmitting(true)
 
     try {
-      const response = await fetch("/api/submit-answers", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          testId: testId,
-          answers: selectedAnswers,
-        }),
+      const response = await TestService.submitAnswers({
+        testId: testId,
+        answers: selectedAnswers,
       })
 
-      if (!response.ok) {
-        throw new Error("Erro ao enviar respostas")
-      }
-
-      const data = await response.json()
-
-      if (data.isComplete) {
+      if (response.isComplete) {
         // Teste completo, redirecionar para a página de resultados
         router.push(
-          `/resultado?score=${data.score.toFixed(1).replace(".", ",")}&testId=${testId}&level=${data.recommendedLevel}`,
+          `/resultado?score=${response.score?.toFixed(1).replace(".", ",") || "0,0"}&testId=${testId}&level=${response.recommendedLevel || currentLevel}`,
         )
       } else {
         // Mais questões disponíveis
-        setCurrentBatch(data.questions)
+        setCurrentBatch(response.questions || [])
         setCurrentQuestionIndex(0)
         setBatchNumber((prev) => prev + 1)
         setAnsweredCount((prev) => prev + currentBatch.length)
 
-        if (data.currentLevel !== currentLevel) {
-          setCurrentLevel(data.currentLevel)
-          setMessage(data.message || `Você avançou para o nível ${data.currentLevel}!`)
+        // Verificar se o usuário passou de nível
+        if (response.currentLevel !== currentLevel && response.previousLevel) {
+          // Mostrar modal de celebração
+          setCelebrationModal({
+            isOpen: true,
+            previousLevel: response.previousLevel,
+            nextLevel: response.currentLevel as Level || "essencial",
+            message: response.message || "",
+          })
+
+          setCurrentLevel(response.currentLevel || currentLevel)
+        } else {
+          // Apenas atualizar a mensagem se não passou de nível
+          if (response.message) {
+            setMessage(response.message)
+          }
         }
 
-        if (data.currentAverage) {
-          setCurrentAverage(data.currentAverage)
+        if (response.currentAverage) {
+          setCurrentAverage(response.currentAverage)
         }
-
-        toast(data.passedLevel ? "Parabéns!" : "Próximas questões", {
-          description: data.message || `Agora você está respondendo questões do nível ${data.currentLevel}`,
-        })
       }
-    } catch (error: any) {
-      toast("Erro", {
-        description: error.message || "Ocorreu um erro ao enviar suas respostas",
+    } catch (error) {
+      toast("Erro ao enviar respostas", {
+        description: error instanceof Error ? error.message : "Ocorreu um erro ao enviar suas respostas",
       })
     } finally {
       setIsSubmitting(false)
@@ -159,36 +163,25 @@ export default function TestePage({
     setIsSubmitting(true)
 
     try {
-      const response = await fetch("/api/submit-answers", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          testId: testId,
-          answers: selectedAnswers,
-          isComplete: true,
-        }),
+      const response = await TestService.submitAnswers({
+        testId: testId,
+        answers: selectedAnswers,
+        isComplete: true,
       })
 
-      if (!response.ok) {
-        throw new Error("Erro ao finalizar teste")
-      }
-
-      const data = await response.json()
       router.push(
-        `/resultado?score=${data.score.toFixed(1).replace(".", ",")}&testId=${testId}&level=${data.recommendedLevel}`,
+        `/resultado?score=${response.score?.toFixed(1).replace(".", ",") || "0,0"}&testId=${testId}&level=${response.recommendedLevel || currentLevel}`,
       )
-    } catch (error: any) {
+    } catch (error) {
       toast("Erro ao finalizar teste", {
-        description: error.message || "Ocorreu um erro ao finalizar o teste",
+        description: error instanceof Error ? error.message : "Ocorreu um erro ao finalizar o teste",
       })
       setIsSubmitting(false)
     }
   }
 
   // Função para obter a cor do badge com base no nível
-  const getLevelColor = (level: string) => {
+  const getLevelColor = (level: Level): string => {
     switch (level) {
       case "fundamental":
         return "bg-green-100 text-green-800"
@@ -204,7 +197,7 @@ export default function TestePage({
   }
 
   // Função para obter o nome formatado do nível
-  const getLevelName = (level: string) => {
+  const getLevelName = (level: Level): string => {
     switch (level) {
       case "fundamental":
         return "Fundamental"
@@ -282,7 +275,7 @@ export default function TestePage({
           <div className="rich-text-content mb-6">{parse(currentQuestion.text)}</div>
 
           <div className="space-y-3">
-            {currentQuestion.options.map((option: any, index: number) => (
+            {currentQuestion.options.map((option, index) => (
               <button
                 key={option.id}
                 className={`w-full p-4 text-left rounded-xl transition-all ${
@@ -326,6 +319,14 @@ export default function TestePage({
           </Button>
         </div>
       </div>
+
+      <CelebrationModal
+        isOpen={celebrationModal.isOpen}
+        onClose={() => setCelebrationModal((prev) => ({ ...prev, isOpen: false }))}
+        previousLevel={celebrationModal.previousLevel}
+        nextLevel={celebrationModal.nextLevel}
+        message={celebrationModal.message}
+      />
     </main>
   )
 }

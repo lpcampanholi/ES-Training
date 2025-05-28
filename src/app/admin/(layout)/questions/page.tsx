@@ -21,9 +21,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Level, Question, QuestionFilters, QuestionFormData, Subject } from "@/types"
+import { QuestionService } from "@/services"
 
 export default function QuestionsPage() {
-  const [questions, setQuestions] = useState<any[]>([])
+  const [questions, setQuestions] = useState<Question[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedSubject, setSelectedSubject] = useState<string>("excel")
@@ -33,118 +35,72 @@ export default function QuestionsPage() {
     fetchQuestions()
   }, [selectedSubject, selectedLevel])
 
-  const fetchQuestions = async () => {
+  const fetchQuestions = async (): Promise<void> => {
     try {
       setIsLoading(true)
-      let url = "/api/questions"
-      const params = new URLSearchParams()
+      const filters: QuestionFilters = {}
 
       if (selectedSubject !== "all") {
-        params.append("subject", selectedSubject)
+        filters.subject = selectedSubject as Subject
       }
 
       if (selectedLevel !== "all") {
-        params.append("level", selectedLevel)
+        filters.level = selectedLevel as Level
       }
 
-      if (params.toString()) {
-        url += `?${params.toString()}`
-      }
-
-      const response = await fetch(url)
-      if (!response.ok) {
-        throw new Error("Erro ao buscar questões")
-      }
-      const data = await response.json()
+      const data = await QuestionService.getQuestions(filters)
       setQuestions(data)
     } catch (error) {
       toast("Erro", {
-        description: "Não foi possível carregar as questões",
+        description: error instanceof Error ? error.message : "Não foi possível carregar as questões",
       })
     } finally {
       setIsLoading(false)
     }
   }
 
-  const handleAddQuestion = async (questionData: any) => {
+  const handleAddQuestion = async (questionData: QuestionFormData): Promise<void> => {
     try {
-      const response = await fetch("/api/questions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(questionData),
-      })
-
-      if (!response.ok) {
-        toast("Erro", {
-          description: "Não foi possível adicionar a questão",
-        })
-        throw new Error("Erro ao adicionar questão")
-      }
-
-      const newQuestion = await response.json()
+      const newQuestion = await QuestionService.createQuestion(questionData)
       setQuestions((prev) => [newQuestion, ...prev])
-      toast("Questão adicionada com sucesso!")
       setIsDialogOpen(false)
+      toast("Questão adicionada com sucesso!")
     } catch (error) {
       toast("Erro", {
-        description: "Não foi possível adicionar a questão",
+        description: error instanceof Error ? error.message : "Não foi possível adicionar a questão",
       })
     }
   }
 
   const handleUpdateQuestion = async (
     questionId: string,
-    questionData: any
-  ) => {
+    questionData: QuestionFormData
+  ): Promise<void> => {
     try {
-      const response = await fetch(`/api/questions/${questionId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(questionData),
-      })
-
-      if (!response.ok) {
-        throw new Error("Erro ao atualizar questão")
-      }
-
-      const updatedQuestion = await response.json()
-      setQuestions((prev) =>
-        prev.map((q) => (q.id === questionId ? updatedQuestion : q))
-      )
-
-      toast("Questão atualizada com sucesso!")
+      const updatedQuestion = await QuestionService.updateQuestion(questionId, questionData)
+      setQuestions((prev) => prev.map((q) => (q.id === questionId ? updatedQuestion : q)))
       setIsDialogOpen(false)
+      toast("Questão atualizada com sucesso!")
     } catch (error) {
       toast("Erro", {
-        description: "Não foi possível atualizar a questão",
+        description:  error instanceof Error ? error.message : "Não foi possível atualizar a questão",
       })
     }
   }
 
-  const handleDeleteQuestion = async (questionId: string) => {
+  const handleDeleteQuestion = async (questionId: string): Promise<void> => {
     if (!confirm("Tem certeza que deseja excluir esta questão?")) {
       return
     }
 
     try {
-      const response = await fetch(`/api/questions/${questionId}`, {
-        method: "DELETE",
-      })
-
-      if (!response.ok) {
-        throw new Error("Erro ao excluir questão")
-      }
-
+      await QuestionService.deleteQuestion(questionId)
       setQuestions((prev) => prev.filter((q) => q.id !== questionId))
 
       toast("Questão excluída com sucesso!")
     } catch (error) {
       toast("Erro", {
-        description: "Não foi possível excluir a questão",
+        description: error instanceof Error ? error.message : "Não foi possível excluir a questão",
       })
     }
   }

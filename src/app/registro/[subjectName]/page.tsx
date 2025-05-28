@@ -1,66 +1,91 @@
 "use client"
 
 import type React from "react"
-
-import { useState } from "react"
+import { useState, useEffect, use } from "react"
 import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { ArrowLeft, User, Mail, Phone, ArrowRight } from "lucide-react"
 import Link from "next/link"
+import { toast } from "sonner"
+import { LeadService, SubjectService } from "@/services"
+import type { CreateLeadDTO, Level, SubjectUI } from "@/types"
 
 export default function RegistroPage({
   params,
 }: {
-  params: { subject: string; level: string }
+  params: Promise<{ subjectName: Level }>
 }) {
   const router = useRouter()
-  const [formData, setFormData] = useState({
-    nome: "",
+  const { subjectName } = use(params)
+  const [isLoading, setIsLoading] = useState(false)
+  const [subject, setSubject] = useState<SubjectUI | null>(null)
+
+  const [formData, setFormData] = useState<CreateLeadDTO>({
+    name: "",
     email: "",
-    telefone: "",
+    phone: "",
   })
+
+  useEffect(() => {
+    // Carregar informações da disciplina
+    const subjectData = SubjectService.getSubjectUIById(subjectName)
+    if (!subjectData) {
+      toast("Erro", {
+        description: "Disciplina não encontrada",
+      })
+      router.push("/disciplinas")
+      return
+    }
+    setSubject(subjectData)
+  }, [subjectName, router, toast])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Em um cenário real, você enviaria os dados para o servidor
-    // e armazenaria as informações do usuário
+    setIsLoading(true)
 
-    // Redirecionar para a página de teste
-    router.push(`/teste/${params.subject}/${params.level}`)
+    try {
+      // Registrar o lead
+      await LeadService.createLead({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+      })
+
+      // Redirecionar para a página de instruções
+      router.push(
+        `/instrucoes/${subjectName}?email=${encodeURIComponent(formData.email)}&nome=${encodeURIComponent(formData.name)}`,
+      )
+    } catch (error) {
+      toast("Erro", {
+        description: error instanceof Error ? error.message : "Ocorreu um erro ao registrar seus dados",
+      })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
-  const getSubjectName = () => {
-    const subjects = {
-      excel: "Excel",
-      powerbi: "PowerBI",
-      sql: "SQL",
-      python: "Python",
-    }
-    return subjects[params.subject as keyof typeof subjects] || params.subject
-  }
-
-  const getLevelName = () => {
-    const levels = {
-      iniciante: "Iniciante",
-      intermediario: "Intermediário",
-      avancado: "Avançado",
-      expert: "Expert",
-    }
-    return levels[params.level as keyof typeof levels] || params.level
+  if (!subject) {
+    return (
+      <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-gradient-to-b from-slate-50 to-slate-100">
+        <div className="w-full max-w-4xl p-8 bg-white rounded-2xl shadow-sm">
+          <div className="text-center py-10">Carregando...</div>
+        </div>
+      </main>
+    )
   }
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-gradient-to-b from-slate-50 to-slate-100">
       <div className="w-full max-w-4xl p-8 bg-white rounded-2xl shadow-sm">
         <Link
-          href={`/nivel/${params.subject}`}
+          href="/disciplinas"
           className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-6 transition-colors"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
@@ -72,13 +97,13 @@ export default function RegistroPage({
             <h2 className="text-3xl font-bold text-slate-800 mb-2">Seja bem-vindo(a) ao nosso teste de nivelamento!</h2>
             <div className="w-20 h-1 bg-blue-500 mx-auto mb-4 rounded-full"></div>
             <p className="text-slate-600">
-              Teste de {getSubjectName()} - Nível {getLevelName()}
+              Teste de <span className={`text-${subject.color} font-semibold`}>{subject.name}</span>
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="w-full max-w-md space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="nome" className="text-slate-700">
+              <Label htmlFor="name" className="text-slate-700">
                 Nome
               </Label>
               <div className="relative">
@@ -86,9 +111,9 @@ export default function RegistroPage({
                   <User className="h-5 w-5" />
                 </div>
                 <Input
-                  id="nome"
-                  name="nome"
-                  value={formData.nome}
+                  id="name"
+                  name="name"
+                  value={formData.name}
                   onChange={handleChange}
                   className="pl-10 py-6 rounded-xl border-slate-200 focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Digite seu nome completo"
@@ -119,7 +144,7 @@ export default function RegistroPage({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="telefone" className="text-slate-700">
+              <Label htmlFor="phone" className="text-slate-700">
                 Telefone
               </Label>
               <div className="relative">
@@ -127,9 +152,9 @@ export default function RegistroPage({
                   <Phone className="h-5 w-5" />
                 </div>
                 <Input
-                  id="telefone"
-                  name="telefone"
-                  value={formData.telefone}
+                  id="phone"
+                  name="phone"
+                  value={formData.phone || ""}
                   onChange={handleChange}
                   className="pl-10 py-6 rounded-xl border-slate-200 focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Digite seu telefone"
@@ -141,8 +166,15 @@ export default function RegistroPage({
             <Button
               type="submit"
               className="w-full py-6 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium mt-6 transition-colors"
+              disabled={isLoading}
             >
-              Vamos lá! <ArrowRight className="ml-2 h-5 w-5" />
+              {isLoading ? (
+                "Processando..."
+              ) : (
+                <>
+                  Vamos lá! <ArrowRight className="ml-2 h-5 w-5" />
+                </>
+              )}
             </Button>
           </form>
         </div>

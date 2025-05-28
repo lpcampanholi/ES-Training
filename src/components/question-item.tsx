@@ -1,5 +1,4 @@
 "use client"
-
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Pencil, Trash2 } from "lucide-react"
@@ -7,40 +6,36 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import QuestionForm from "@/components/question-form"
 import parse from "html-react-parser"
 import { Badge } from "@/components/ui/badge"
+import { type Question, type QuestionFormData, Level } from "@/types"
 
-export default function QuestionItem({
-  question,
-  index,
-  onDelete,
-  onUpdate,
-}: {
-  question: any
+interface QuestionItemProps {
+  question: Question
   index: number
   onDelete: () => void
-  onUpdate: (questionId: string, data: any) => void
-}) {
-  const handleUpdate = (data: any) => {
+  onUpdate: (questionId: string, data: QuestionFormData) => void
+}
+
+export default function QuestionItem({ question, index, onDelete, onUpdate }: QuestionItemProps) {
+  const handleUpdate = (data: QuestionFormData): void => {
     onUpdate(question.id, data)
   }
 
-  // Função para obter a cor do badge com base no nível
-  const getLevelColor = (level: string) => {
+  const getLevelColor = (level: Level): string => {
     switch (level) {
-      case "fundamental":
+      case Level.fundamental:
         return "bg-green-100 text-green-800"
-      case "essencial":
+      case Level.essencial:
         return "bg-blue-100 text-blue-800"
-      case "avancado":
+      case Level.avancado:
         return "bg-purple-100 text-purple-800"
-      case "profissional":
+      case Level.profissional:
         return "bg-amber-100 text-amber-800"
       default:
         return "bg-gray-100 text-gray-800"
     }
   }
 
-  // Função para obter a cor do badge com base no valor da opção
-  const getValueColor = (value: number) => {
+  const getValueColor = (value: number): string => {
     switch (value) {
       case 0:
         return "bg-red-100 text-red-800"
@@ -55,8 +50,7 @@ export default function QuestionItem({
     }
   }
 
-  // Função para obter o texto do valor da opção
-  const getValueText = (value: number) => {
+  const getValueText = (value: number): string => {
     switch (value) {
       case 0:
         return "Totalmente errada"
@@ -90,7 +84,7 @@ export default function QuestionItem({
                   Editar
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-[70%] max-h-[90vh] overflow-y-auto">
+              <DialogContent className="max-w-3xl">
                 <DialogHeader>
                   <DialogTitle>Editar Questão</DialogTitle>
                 </DialogHeader>
@@ -107,7 +101,7 @@ export default function QuestionItem({
           <div className="rich-text-content">{parse(question.text)}</div>
         </div>
         <div className="space-y-2">
-          {question.options.map((option: any, idx: number) => (
+          {question.options.map((option, idx) => (
             <div
               key={option.id}
               className={`p-3 border rounded-md ${option.value === 10 ? "border-green-500 bg-green-50" : "border-gray-200"}`}

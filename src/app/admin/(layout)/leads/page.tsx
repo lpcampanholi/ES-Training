@@ -16,15 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import type { ColumnDef } from "@tanstack/react-table";
-
-type Lead = {
-  id: string;
-  name: string;
-  email: string;
-  phone: string | null;
-  createdAt: string;
-  updatedAt: string;
-};
+import { Lead, LeadService } from "@/services";
 
 export default function LeadsPage() {
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -33,25 +25,21 @@ export default function LeadsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   useEffect(() => {
-    const fetchLeads = async () => {
-      try {
-        const response = await fetch("/api/leads");
-        if (!response.ok) {
-          throw new Error("Erro ao buscar leads");
-        }
-        const data = await response.json();
-        setLeads(data);
-      } catch (error) {
-        toast("Erro", {
-          description: "Não foi possível carregar os leads",
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchLeads();
+    fetchLeads()
   }, [toast]);
+
+  const fetchLeads = async (): Promise<void> => {
+    try {
+      const data = await LeadService.getLeads()
+      setLeads(data)
+    } catch (error) {
+      toast("Erro", {
+        description: error instanceof Error ? error.message : "Não foi possível carregar os leads",
+      });
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const handleExportCSV = () => {
     if (leads.length === 0) {
