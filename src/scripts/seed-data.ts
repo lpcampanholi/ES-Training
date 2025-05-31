@@ -1,9 +1,8 @@
-import { PrismaClient } from "@prisma/client"
+import { PrismaClient, Subject, Level } from "@prisma/client"
 import { hash } from "bcrypt"
 
 const prisma = new PrismaClient()
 
-// Função para gerar conteúdo HTML de exemplo para questões
 function generateRichTextQuestion(index: number, subject: string) {
   const richTextTemplates = [
     `<h3>Análise o problema abaixo:</h3>
@@ -83,24 +82,17 @@ ORDER BY avg_salary DESC;
     <p>O que esta consulta retorna?</p>`,
   ]
 
-  // Selecionar um template aleatório
   return richTextTemplates[index % richTextTemplates.length]
 }
 
-// Função para gerar opções de resposta
 function generateOptions() {
-  // Valores possíveis para as opções
   const values = [0.0, 4.0, 7.0, 10.0]
-
-  // Garantir que uma opção tenha valor 10.0 (totalmente correta)
   const options = [
     {
       text: "<p>Esta é a resposta totalmente correta.</p>",
       value: 10.0,
     },
   ]
-
-  // Gerar as outras 3 opções com valores diferentes
   const usedValues = [10.0]
 
   for (let i = 0; i < 3; i++) {
@@ -108,7 +100,6 @@ function generateOptions() {
     do {
       value = values[Math.floor(Math.random() * values.length)]
     } while (usedValues.includes(value))
-
     usedValues.push(value)
 
     let text = ""
@@ -120,20 +111,15 @@ function generateOptions() {
       text = "<p>Esta resposta está quase correta, mas tem pequenos erros.</p>"
     }
 
-    options.push({
-      text,
-      value,
-    })
+    options.push({ text, value })
   }
 
-  // Embaralhar as opções
   return options.sort(() => Math.random() - 0.5)
 }
 
 async function main() {
   console.log("🌱 Iniciando seed de dados...")
 
-  // Criar usuário administrador
   const adminPassword = await hash("admin123", 10)
   const admin = await prisma.user.upsert({
     where: { email: "admin@example.com" },
@@ -147,7 +133,6 @@ async function main() {
   })
   console.log("👤 Usuário administrador criado:", admin.email)
 
-  // Criar usuários normais
   const userPassword = await hash("user123", 10)
   const users = [
     { name: "João Silva", email: "joao@example.com" },
@@ -168,29 +153,26 @@ async function main() {
   }
   console.log(`👥 ${users.length} usuários normais criados`)
 
-  // Criar questões para cada disciplina e nível
-  const subjects = ["excel", "powerbi", "sql", "python"]
-  const levels = ["fundamental", "essencial", "avancado", "profissional"]
+  const subjects: Subject[] = ["excel", "powerbi", "sql", "python"]
+  const levels: Level[] = ["fundamental", "essencial", "avancado", "profissional"]
 
   let questionCount = 0
 
   for (const subject of subjects) {
     for (const level of levels) {
-      // Criar 10 questões para cada combinação de disciplina e nível
       for (let i = 0; i < 10; i++) {
         const questionText = generateRichTextQuestion(i, subject)
         const options = generateOptions()
 
-        // Criar a questão
-        const question = await prisma.question.create({
+        await prisma.question.create({
           data: {
             text: questionText,
-            subject: subject as any,
-            level: level as any,
+            subject,
+            level,
             options: {
-              create: options.map((option) => ({
-                text: option.text,
-                value: option.value,
+              create: options.map((opt) => ({
+                text: opt.text,
+                value: opt.value,
               })),
             },
           },
@@ -202,7 +184,6 @@ async function main() {
   }
   console.log(`❓ ${questionCount} questões criadas`)
 
-  // Criar leads
   const leads = [
     { name: "Roberto Almeida", email: "roberto@example.com", phone: "(11) 98765-4321" },
     { name: "Carla Mendes", email: "carla@example.com", phone: "(21) 99876-5432" },
@@ -210,9 +191,7 @@ async function main() {
   ]
 
   for (const lead of leads) {
-    await prisma.lead.create({
-      data: lead,
-    })
+    await prisma.lead.create({ data: lead })
   }
   console.log(`📊 ${leads.length} leads criados`)
 

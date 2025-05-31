@@ -1,4 +1,6 @@
-import type { Lead, CreateLeadDTO, UpdateLeadDTO, LeadFilters } from "@/types"
+import { LeadFilters } from "@/types"
+import { CreateLeadDTO, UpdateLeadDTO } from "@/types/dtos"
+import { Lead } from "@/types/prisma"
 
 export class LeadService {
   private static readonly BASE_URL = "/api/leads"

@@ -2,9 +2,9 @@ import { type NextRequest, NextResponse } from "next/server"
 import prisma from "@/lib/prisma"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
-import type { Lead, CreateLeadDTO } from "@/types"
+import type { CreateLeadDTO } from "@/types/dtos"
 
-export async function GET(request: NextRequest): Promise<NextResponse<Lead[] | { error: string }>> {
+export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
 
@@ -37,7 +37,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<Lead[] | {
   }
 }
 
-export async function POST(request: NextRequest): Promise<NextResponse<Lead | { error: string }>> {
+export async function POST(request: NextRequest) {
   try {
     const body: CreateLeadDTO = await request.json()
     const { name, email, phone, testLevel, testSubject, fromTest, stage, observations } = body

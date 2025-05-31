@@ -1,4 +1,6 @@
-import { Question, CreateQuestionDTO, UpdateQuestionDTO, QuestionFilters } from "@/types"
+import { QuestionFilters } from "@/types"
+import { CreateQuestionDTO, UpdateQuestionDTO } from "@/types/dtos"
+import { Question } from "@/types/prisma"
 
 export class QuestionService {
   static async getQuestions(filters?: QuestionFilters): Promise<Question[]> {

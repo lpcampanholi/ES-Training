@@ -1,14 +1,7 @@
-import {
-  GenerateTestDTO,
-  GenerateTestResponse,
-  SubmitAnswersDTO,
-  SubmitAnswersResponse,
-  TestResultResponse,
-  UserTest,
-} from "@/types"
+import { GenerateTestDTO, SubmitAnswersDTO } from "@/types/dtos"
 
 export class TestService {
-  static async generateTest(data: GenerateTestDTO): Promise<GenerateTestResponse> {
+  static async generateTest(data: GenerateTestDTO) {
     const response = await fetch("/api/generate-test", {
       method: "POST",
       headers: {
@@ -25,7 +18,7 @@ export class TestService {
     return response.json()
   }
 
-  static async submitAnswers(data: SubmitAnswersDTO): Promise<SubmitAnswersResponse> {
+  static async submitAnswers(data: SubmitAnswersDTO) {
     const response = await fetch("/api/submit-answers", {
       method: "POST",
       headers: {
@@ -42,24 +35,10 @@ export class TestService {
     return response.json()
   }
 
-  static async getTestById(id: string): Promise<TestResultResponse> {
+  static async getTestById(id: string) {
     const response = await fetch(`/api/tests/${id}`)
     if (!response.ok) {
       throw new Error("Erro ao buscar teste")
-    }
-
-    return response.json()
-  }
-
-  static async getUserTests(userId?: string): Promise<UserTest[]> {
-    let url = "/api/user-tests"
-    if (userId) {
-      url += `?userId=${userId}`
-    }
-
-    const response = await fetch(url)
-    if (!response.ok) {
-      throw new Error("Erro ao buscar testes do usuário")
     }
 
     return response.json()

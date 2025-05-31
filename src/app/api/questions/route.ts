@@ -2,7 +2,9 @@ import { type NextRequest, NextResponse } from "next/server"
 import prisma from "@/lib/prisma"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
-import type { Question, CreateQuestionDTO, QuestionFilters } from "@/types"
+import type { QuestionFilters } from "@/types"
+import type { Question } from "@prisma/client"
+import { CreateQuestionDTO } from "@/types/dtos"
 
 export async function GET(request: NextRequest): Promise<NextResponse<Question[] | { error: string }>> {
   try {

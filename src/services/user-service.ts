@@ -1,4 +1,4 @@
-import { User } from "@/types"
+import { User } from "@/types/prisma"
 
 export class UserService {
   static async getUsers(): Promise<User[]> {

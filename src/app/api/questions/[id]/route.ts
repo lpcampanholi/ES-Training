@@ -2,7 +2,8 @@ import { type NextRequest, NextResponse } from "next/server"
 import prisma from "@/lib/prisma"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
-import type { Question, UpdateQuestionDTO } from "@/types"
+import type { UpdateQuestionDTO } from "@/types/dtos"
+import { Question } from "@prisma/client"
 
 interface RouteParams {
   params: { id: string }

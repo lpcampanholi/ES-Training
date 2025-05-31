@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, use } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Clock, AlertCircle } from "lucide-react"
@@ -13,7 +13,9 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { CelebrationModal } from "@/components/celebration-modal"
 import { TestService } from "@/services/test-service"
 import { getLevelColor, getLevelName } from "@/utils"
-import type { Question, Level, TestData } from "@/types"
+import { Level } from "@prisma/client"
+import { useModalConfirm } from "@/contexts/modal-confirm-context"
+import { FrontendQuestion, TestData } from "@/types"
 
 export default function TestePage({
   params,
@@ -21,22 +23,23 @@ export default function TestePage({
   params: Promise<{ testId: string }>
 }) {
   const router = useRouter()
+  const { testId } = use(params)
+  const modalConfirm = useModalConfirm()
 
   const [testData, setTestData] = useState<TestData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, string>>({})
-  const [timeLeft, setTimeLeft] = useState(1200) // 20 minutos em segundos
+  const [timeLeft, setTimeLeft] = useState(1200)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [currentBatch, setCurrentBatch] = useState<Question[]>([])
+  const [currentBatch, setCurrentBatch] = useState<FrontendQuestion[]>([])
   const [batchNumber, setBatchNumber] = useState(1)
-  const [currentLevel, setCurrentLevel] = useState<Level>("fundamental" as Level)
+  const [currentLevel, setCurrentLevel] = useState<Level>("fundamental")
   const [message, setMessage] = useState<string | null>(null)
   const [answeredCount, setAnsweredCount] = useState(0)
   const [currentAverage, setCurrentAverage] = useState(0)
 
-  // Estado para o modal de celebração
   const [celebrationModal, setCelebrationModal] = useState({
     isOpen: false,
     previousLevel: "fundamental" as Level,
@@ -47,28 +50,27 @@ export default function TestePage({
   useEffect(() => {
     const fetchTestData = async () => {
       try {
-        // Buscar o teste inicial
-        const data = await TestService.getTestById(params.testId)
+        const data = await TestService.getTestById(testId)
         setTestData(data)
         setCurrentBatch(data.questions)
         setCurrentLevel(data.currentLevel)
       } catch (error) {
-        setError("Erro ao carregar teste")
-        console.error(error)
+        if (error instanceof Error) {
+          setError(error.message || "Erro ao carregar teste")
+        }
       } finally {
         setIsLoading(false)
       }
     }
-
     fetchTestData()
-  }, [params.testId])
+  }, [testId])
 
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
           clearInterval(timer)
-          handleFinishTest()
+          handleShowConfirmFinish("Tempo esgotado", "Seu tempo acabou. Deseja finalizar o teste?")
           return 0
         }
         return prev - 1
@@ -87,8 +89,6 @@ export default function TestePage({
 
   const handleNextQuestion = () => {
     const currentQuestion = currentBatch[currentQuestionIndex]
-
-    // Verificar se o usuário selecionou uma resposta para a questão atual
     if (!selectedAnswers[currentQuestion.id]) {
       toast("Selecione uma resposta", {
         description: "Por favor, selecione uma resposta antes de continuar",
@@ -97,10 +97,8 @@ export default function TestePage({
     }
 
     if (currentQuestionIndex < currentBatch.length - 1) {
-      // Avançar para a próxima questão no lote atual
       setCurrentQuestionIndex((prev) => prev + 1)
     } else {
-      // Último lote de questões, enviar respostas
       handleSubmitAnswers()
     }
   }
@@ -110,39 +108,34 @@ export default function TestePage({
     setIsSubmitting(true)
 
     try {
+      const batchSize = currentBatch.length
       const response = await TestService.submitAnswers({
-        testId: testId,
+        testId,
         answers: selectedAnswers,
       })
 
       if (response.isComplete) {
-        // Teste completo, redirecionar para a página de resultados
         router.push(
           `/resultado?score=${response.score?.toFixed(1).replace(".", ",") || "0,0"}&testId=${testId}&level=${response.recommendedLevel || currentLevel}`,
         )
       } else {
-        // Mais questões disponíveis
-        setCurrentBatch(response.questions || [])
+        setCurrentBatch([])
         setCurrentQuestionIndex(0)
         setBatchNumber((prev) => prev + 1)
-        setAnsweredCount((prev) => prev + currentBatch.length)
+        setAnsweredCount((prev) => prev + batchSize)
 
-        // Verificar se o usuário passou de nível
+        setCurrentBatch(response.questions || [])
+
         if (response.currentLevel !== currentLevel && response.previousLevel) {
-          // Mostrar modal de celebração
           setCelebrationModal({
             isOpen: true,
             previousLevel: response.previousLevel,
-            nextLevel: response.currentLevel as Level || "essencial",
+            nextLevel: response.currentLevel || "essencial",
             message: response.message || "",
           })
-
           setCurrentLevel(response.currentLevel || currentLevel)
-        } else {
-          // Apenas atualizar a mensagem se não passou de nível
-          if (response.message) {
-            setMessage(response.message)
-          }
+        } else if (response.message) {
+          setMessage(response.message)
         }
 
         if (response.currentAverage) {
@@ -150,7 +143,7 @@ export default function TestePage({
         }
       }
     } catch (error) {
-      toast("Erro ao enviar respostas", {
+      toast("Erro", {
         description: error instanceof Error ? error.message : "Ocorreu um erro ao enviar suas respostas",
       })
     } finally {
@@ -164,7 +157,7 @@ export default function TestePage({
 
     try {
       const response = await TestService.submitAnswers({
-        testId: testId,
+        testId,
         answers: selectedAnswers,
         isComplete: true,
       })
@@ -180,24 +173,20 @@ export default function TestePage({
     }
   }
 
+  const handleShowConfirmFinish = (title: string, message: string) => {
+    modalConfirm.open({
+      title,
+      message,
+      onConfirm: handleFinishTest,
+    })
+  }
+
   if (isLoading) {
-    return (
-      <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-gradient-to-b from-slate-50 to-slate-100">
-        <div className="w-full max-w-4xl p-8 bg-white rounded-2xl shadow-sm">
-          <div className="text-center py-10">Carregando teste...</div>
-        </div>
-      </main>
-    )
+    return <div className="text-center py-10">Carregando teste...</div>
   }
 
   if (error || !testData || currentBatch.length === 0) {
-    return (
-      <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-gradient-to-b from-slate-50 to-slate-100">
-        <div className="w-full max-w-4xl p-8 bg-white rounded-2xl shadow-sm">
-          <div className="text-center py-10 text-red-500">{error || "Teste não encontrado"}</div>
-        </div>
-      </main>
-    )
+    return <div className="text-center py-10 text-red-500">{error || "Teste não encontrado"}</div>
   }
 
   const currentQuestion = currentBatch[currentQuestionIndex]
@@ -205,7 +194,7 @@ export default function TestePage({
   const totalAnswered = answeredCount + currentQuestionIndex + 1
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-gradient-to-b from-slate-50 to-slate-100">
+    <main className="flex flex-col items-center justify-center p-4 min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
       <div className="w-full max-w-4xl p-8 bg-white rounded-2xl shadow-sm">
         {message && (
           <Alert className="mb-6">
@@ -243,7 +232,7 @@ export default function TestePage({
           <div className="rich-text-content mb-6">{parse(currentQuestion.text)}</div>
 
           <div className="space-y-3">
-            {currentQuestion.options.map((option, index: number) => (
+            {currentQuestion.options.map((option, index) => (
               <button
                 key={option.id}
                 className={`w-full p-4 text-left rounded-xl transition-all ${
@@ -260,7 +249,7 @@ export default function TestePage({
                       : "bg-slate-100 text-slate-700"
                   }`}
                 >
-                  {String.fromCharCode(97 + index)} {/* a, b, c, d */}
+                  {String.fromCharCode(97 + index)}
                 </span>
                 <div className="inline-block rich-text-content">{parse(option.text)}</div>
               </button>
@@ -269,7 +258,14 @@ export default function TestePage({
         </div>
 
         <div className="flex justify-between">
-          <Button variant="outline" onClick={handleFinishTest} className="rounded-xl" disabled={isSubmitting}>
+          <Button
+            variant="outline"
+            onClick={() =>
+              handleShowConfirmFinish("Finalizar teste", "Tem certeza de que deseja finalizar o teste agora?")
+            }
+            className="rounded-xl"
+            disabled={isSubmitting}
+          >
             <AlertCircle className="w-4 h-4 mr-2" />
             Finalizar Teste
           </Button>
@@ -281,8 +277,8 @@ export default function TestePage({
             {isSubmitting
               ? "Enviando..."
               : currentQuestionIndex < currentBatch.length - 1
-                ? "Próxima Questão"
-                : "Enviar Respostas"}
+              ? "Próxima Questão"
+              : "Enviar Respostas"}
             <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
         </div>

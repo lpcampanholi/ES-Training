@@ -1,63 +1,51 @@
 import { NextRequest, NextResponse } from "next/server"
 import prisma from "@/lib/prisma"
-import { GenerateTestDTO, GenerateTestResponse } from "@/types"
+import { GenerateTestDTO } from "@/types/dtos"
 
-export async function POST(request: NextRequest): Promise<NextResponse<GenerateTestResponse | { error: string }>> {
+export async function POST(request: NextRequest) {
   try {
     const body: GenerateTestDTO = await request.json()
-    const { subject, initialLevel = "fundamental", userId } = body
+    const { subject, level, leadEmail } = body
 
-    if (!subject || !userId) {
+    if (!subject || !leadEmail) {
       return NextResponse.json({ error: "Disciplina e ID do usuário são obrigatórios" }, { status: 400 })
     }
 
-    // Buscar 3 questões aleatórias do nível inicial
+    const lead = await prisma.lead.findUnique({
+      where: { email: leadEmail },
+    })
+
+    if (!lead) {
+      return NextResponse.json({ error: "Usuário não encontrado" }, { status: 404 })
+    }
+
     const initialQuestions = await prisma.question.findMany({
-      where: {
-        subject,
-        level: initialLevel,
-      },
-      include: {
-        options: true,
-      },
+      where: { subject, level: level },
+      include: { options: true },
       take: 3,
-      orderBy: {
-        // Ordenação aleatória
-        id: "asc",
-      },
     })
 
     if (initialQuestions.length < 3) {
-      return NextResponse.json(
-        { error: `Não há questões suficientes do nível ${initialLevel} para a disciplina ${subject}` },
-        { status: 400 },
-      )
+      return NextResponse.json({ error: "Não há questões suficientes para iniciar o teste" }, { status: 400 })
     }
 
-    // Embaralhar as opções de cada questão
-    const questionsWithShuffledOptions = initialQuestions.map((question) => {
-      const shuffledOptions = [...question.options].sort(() => Math.random() - 0.5)
-      return {
-        ...question,
-        options: shuffledOptions,
-      }
-    })
+    const questionsWithShuffledOptions = initialQuestions.map((question) => ({
+      ...question,
+      options: [...question.options].sort(() => Math.random() - 0.5),
+    }))
 
-    // Criar um novo teste para o usuário
-    const userTest = await prisma.userTest.create({
+    const leadTest = await prisma.leadTest.create({
       data: {
-        userId,
+        leadId: lead.id,
         subject,
-        level: initialLevel,
-        questions: JSON.stringify(questionsWithShuffledOptions.map((q) => q.id)),
-        answers: JSON.stringify({}),
+        level,
       },
     })
 
     return NextResponse.json({
-      testId: userTest.id,
+      testId: leadTest.id,
       questions: questionsWithShuffledOptions,
-      currentLevel: initialLevel,
+      currentLevel: level,
     })
   } catch (error) {
     console.error("Error generating test:", error)

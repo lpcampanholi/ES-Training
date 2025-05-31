@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { QuestionService } from "@/services/question-service"
-import { Question, QuestionFilters } from "@/types"
+import { QuestionFilters } from "@/types"
+import { Question } from "@/types/entities"
 
 export function useQuestions(filters?: QuestionFilters) {
   const [questions, setQuestions] = useState<Question[]>([])

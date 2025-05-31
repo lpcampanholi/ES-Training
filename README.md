@@ -30,6 +30,7 @@ _________________
 25/05 - 2h  
 26/05 - 1h  
 27/05 - 4h  
+30/05 - 5h
 
 ## Níveis
 
@@ -88,3 +89,36 @@ Totalmente certa: 100
  - Deletar
  - Fechar modal da questão ao fechar
 - Corrigir lógica do teste
+
+# Regra do teste:
+
+O teste possui deve possui a seguinte regra:
+
+- Níveis do teste (nesta ordem): fundamental, essencial, avançado e profissional.
+
+- O usuário inicia o teste no primeiro nível: fundamental.
+
+- No início de cada nível, o usuário começa com 3 questões obrigatórias desse nível.
+
+- Após fazer essas três primeiras questões, há uma avaliação:
+
+	- Se a média for >= 8.0, o usuário já avança para o próximo nível.
+	- Se a média for < 8.0, verifica-se se é possível atingir média 8.0 com a próxima questão.
+	- Se não for possível atingir média 8.0, mesmo tirando 10.0 na próxima questão, o teste é encerrado e o usuário permanece no nível atual.
+	- Se for possível atingir média 8.0, o usuário faz mais uma pergunta deste nível.
+
+Então o usuário faz a quarta questão do nível. Então deve ser feito a avaliação novamente:
+
+	- Se a média for >= 8.0, o usuário já avança para o próximo nível.
+	- Se a média for < 8.0, verifica-se se é possível atingir média 8.0 com a próxima questão.
+	- Se não for possível atingir média 8.0, mesmo tirando 10.0 na próxima questão, o teste é encerrado e o usuário permanece no nível atual.
+	- Se for possível atingir média 8.0, o usuário faz mais uma pergunta deste nível.
+
+Então o usuário faz a quinta e última questão do nível.
+
+	- Se atingiu a média (>= 8.0), ele continua o teste e avança para o próximo nível.
+	- Se não atingiu a média (< 8.0), o teste é encerrado e o usuário fica no nível atual.
+
+Recomendação Final:
+
+- Ao final do teste, o sistema recomenda o nível adequado para o usuário com base em seu desempenho.

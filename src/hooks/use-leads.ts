@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { LeadService } from "@/services/lead-service"
-import type { Lead } from "@/types"
+import { Lead } from "@prisma/client"
 
 export function useLeads() {
   const [leads, setLeads] = useState<Lead[]>([])

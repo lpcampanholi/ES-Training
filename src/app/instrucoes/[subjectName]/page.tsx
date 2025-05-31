@@ -8,7 +8,8 @@ import Link from "next/link"
 import { toast } from "sonner"
 import { TestService } from "@/services/test-service"
 import { SubjectService } from "@/services/subject-service"
-import type { Level, Subject, SubjectUI } from "@/types"
+import type { SubjectUI } from "@/types"
+import { Level, Subject } from "@/types/prisma"
 
 export default function InstrucoesPage({
   params,
@@ -24,7 +25,6 @@ export default function InstrucoesPage({
   const [subject, setSubject] = useState<SubjectUI | null>(null)
 
   useEffect(() => {
-    // Carregar informações da disciplina
     const subjectData = SubjectService.getSubjectUIById(subjectName)
     if (!subjectData) {
       toast("Erro", {
@@ -43,18 +43,13 @@ export default function InstrucoesPage({
       })
       return
     }
-
     setIsLoading(true)
-
     try {
-      // Gerar o teste
       const testData = await TestService.generateTest({
         subject: subjectName as Subject,
-        initialLevel: "fundamental" as Level, // Começar com nível fundamental
-        userId: email, // Usar o email como identificador do usuário
+        level: "fundamental" as Level,
+        leadEmail: email,
       })
-
-      // Redirecionar para a página do teste
       router.push(`/teste/${testData.testId}`)
     } catch (error) {
       toast("Erro", {

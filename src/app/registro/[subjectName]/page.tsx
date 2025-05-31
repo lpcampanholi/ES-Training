@@ -11,7 +11,9 @@ import Link from "next/link"
 import { toast } from "sonner"
 import { LeadService } from "@/services/lead-service"
 import { SubjectService } from "@/services/subject-service"
-import type { CreateLeadDTO, Level, SubjectUI } from "@/types"
+import { SubjectUI } from "@/types"
+import { Level } from "@/types/prisma"
+import { CreateLeadDTO } from "@/types/dtos"
 
 export default function RegistroPage({
   params,
@@ -30,7 +32,6 @@ export default function RegistroPage({
   })
 
   useEffect(() => {
-    // Carregar informações da disciplina
     const subjectData = SubjectService.getSubjectUIById(subjectName)
     if (!subjectData) {
       toast("Erro", {
@@ -50,16 +51,12 @@ export default function RegistroPage({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-
     try {
-      // Registrar o lead
       await LeadService.createLead({
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
       })
-
-      // Redirecionar para a página de instruções
       router.push(
         `/instrucoes/${subjectName}?email=${encodeURIComponent(formData.email)}&nome=${encodeURIComponent(formData.name)}`,
       )
