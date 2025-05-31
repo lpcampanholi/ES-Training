@@ -55,7 +55,6 @@ export default function InstrucoesPage({
       toast("Erro", {
         description: error instanceof Error ? error.message : "Ocorreu um erro ao iniciar o teste",
       })
-    } finally {
       setIsLoading(false)
     }
   }
@@ -92,7 +91,7 @@ export default function InstrucoesPage({
           </div>
 
           <div className="mb-8 p-8">
-              <div className="space-y-4">
+              <div className="space-y-8">
                 <div className="flex items-start gap-3">
                   <div className="bg-blue-100 p-2 rounded-full">
                     <Brain className="h-5 w-5 text-blue-600" />
@@ -153,14 +152,14 @@ export default function InstrucoesPage({
 
           <Button
             onClick={handleStartTest}
-            className="py-6 px-8 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors"
+            className="py-6 px-8 w-[200px] rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors"
             disabled={isLoading}
           >
             {isLoading ? (
               "Preparando teste..."
             ) : (
               <>
-                Iniciar Teste <ArrowRight className="ml-2 h-5 w-5" />
+                Iniciar Teste <ArrowRight className="ml-1 h-5 w-5" />
               </>
             )}
           </Button>

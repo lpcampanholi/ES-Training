@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
-import { ArrowLeft, User, Mail, Phone, ArrowRight } from "lucide-react"
+import { ArrowLeft, User, Mail, Phone, ArrowRight, Loader2 } from "lucide-react"
 import Link from "next/link"
 import { toast } from "sonner"
 import { LeadService } from "@/services/lead-service"
@@ -64,7 +64,6 @@ export default function RegistroPage({
       toast("Erro", {
         description: error instanceof Error ? error.message : "Ocorreu um erro ao registrar seus dados",
       })
-    } finally {
       setIsLoading(false)
     }
   }
@@ -73,7 +72,9 @@ export default function RegistroPage({
     return (
       <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-gradient-to-b from-slate-50 to-slate-100">
         <div className="w-full max-w-4xl p-8 bg-white rounded-2xl shadow-sm">
-          <div className="text-center py-10">Carregando...</div>
+            <div className="text-center py-10">
+              <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+            </div>
         </div>
       </main>
     )
@@ -92,7 +93,7 @@ export default function RegistroPage({
 
         <div className="flex flex-col items-center justify-center py-6">
           <div className="mb-10 text-center">
-            <h2 className="text-3xl font-bold text-slate-800 mb-2">Seja bem-vindo(a) ao nosso teste de nivelamento!</h2>
+            <h2 className="text-2xl font-bold text-slate-800 mb-2">Seja bem-vindo(a) ao nosso teste de nivelamento!</h2>
             <div className="w-20 h-1 bg-blue-500 mx-auto mb-4 rounded-full"></div>
             <p className="text-slate-600">
               Teste de <span className={`text-${subject.color} font-semibold`}>{subject.name}</span>

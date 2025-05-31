@@ -3,7 +3,7 @@
 import { useState, useEffect, use } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Clock, AlertCircle } from "lucide-react"
+import { ArrowRight, Clock, AlertCircle, Loader2 } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
 import { toast } from "sonner"
 import { formatTime } from "@/lib/utils"
@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { CelebrationModal } from "@/components/celebration-modal"
 import { TestService } from "@/services/test-service"
-import { getLevelColor, getLevelName } from "@/utils"
+import { getLevelColor, getLevelName, getSubjectColor } from "@/utils"
 import { Level } from "@prisma/client"
 import { useModalConfirm } from "@/contexts/modal-confirm-context"
 import { FrontendQuestion, TestData } from "@/types"
@@ -182,7 +182,13 @@ export default function TestePage({
   }
 
   if (isLoading) {
-    return <div className="text-center py-10">Carregando teste...</div>
+    return (
+    <div className="text-center py-10">
+      <div className="flex justify-center py-10">
+        <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
+      </div>
+    </div>
+    )
   }
 
   if (error || !testData || currentBatch.length === 0) {
@@ -205,7 +211,7 @@ export default function TestePage({
 
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-2">
-            <div className="text-sm font-medium text-slate-700 bg-slate-100 px-4 py-2 rounded-full">
+            <div className={`${getSubjectColor(currentQuestion.subject)} text-sm font-medium px-4 rounded-full border-1 border-slate-200`}>
               {currentQuestion.subject === "powerbi" ? "Power BI" : currentQuestion.subject.toUpperCase()}
             </div>
             <Badge className={getLevelColor(currentLevel)}>{getLevelName(currentLevel)}</Badge>
@@ -218,9 +224,11 @@ export default function TestePage({
 
         <div className="mb-6">
           <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-medium text-slate-600">Progresso do nível atual</span>
             <span className="text-sm font-medium text-slate-600">
-              Questão {totalAnswered}
+              Progresso do nível atual: {currentQuestionIndex + 1}/{currentBatch.length}
+            </span>
+            <span className="text-sm font-medium text-slate-600">
+               (Questão {totalAnswered} total)
             </span>
           </div>
           <Progress value={progress} className="h-2" />

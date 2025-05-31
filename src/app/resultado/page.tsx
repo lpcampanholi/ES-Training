@@ -6,7 +6,6 @@ import Link from "next/link"
 import { CheckCircle, Home, Award, ArrowRight } from "lucide-react"
 import confetti from "canvas-confetti"
 import { useEffect } from "react"
-import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { getLevelName, getLevelColor, getLevelDescription } from "@/utils"
 import { Level } from "@/types/prisma"
@@ -55,7 +54,7 @@ export default function ResultadoPage() {
         </div>
 
         <div className="mb-10">
-          <p className="text-base text-slate-500 mb-2">Sua nota final</p>
+          <p className="text-base text-slate-500 mb-2">Sua nota no nível atual:</p>
           <div className="flex items-baseline justify-center gap-2">
             <span className={`text-7xl font-bold ${getScoreColor()}`}>{score}</span>
             <span className="text-2xl text-slate-600">/ 10,0</span>
@@ -63,7 +62,7 @@ export default function ResultadoPage() {
         </div>
 
         <div className="mb-10">
-          <p className="text-base text-slate-500 mb-2">Nível recomendado</p>
+          <p className="text-base text-slate-500 mb-2">Nível recomendado:</p>
           <Badge className={`text-lg px-4 py-2 ${getLevelColor(recommendedLevel)}`}>
             {getLevelName(recommendedLevel)}
           </Badge>
@@ -78,14 +77,14 @@ export default function ResultadoPage() {
 
         <div className="flex flex-wrap gap-4 justify-center mt-6">
           <Link href="/disciplinas">
-            <Button className="rounded-xl bg-green-600 hover:bg-green-700 px-6 py-6 h-auto">
-              <Award className="w-5 h-5 mr-2" />
+            <Button className="rounded-xl bg-green-600 hover:bg-green-700 px-6 py-6">
+              <Award className="w-5" />
               Fazer outro teste
             </Button>
           </Link>
           <Link href="/">
-            <Button variant="outline" className="rounded-xl px-6 py-6 h-auto">
-              <Home className="w-5 h-5 mr-2" />
+            <Button variant="outline" className="rounded-xl px-6 py-6 ">
+              <Home className="w-5" />
               Voltar para o início
             </Button>
           </Link>

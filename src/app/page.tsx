@@ -14,8 +14,6 @@ import {
   Code,
   TrendingUp,
   Brain,
-  LineChart,
-  MessageSquare,
 } from "lucide-react"
 
 export default function LandingPage() {
@@ -37,13 +35,10 @@ export default function LandingPage() {
             <Link href="#vantagens" className="text-slate-700 hover:text-green-600 transition-colors">
               Vantagens
             </Link>
-            <Link href="#planos" className="text-slate-700 hover:text-green-600 transition-colors">
-              Planos
-            </Link>
           </nav>
           <div>
-            <Link href="#matricula">
-              <Button className="bg-green-600 hover:bg-green-700">Quero me matricular</Button>
+            <Link href="/disciplinas">
+              <Button className="bg-green-600 hover:bg-green-700">Começar minha jornada</Button>
             </Link>
           </div>
         </div>
@@ -284,16 +279,6 @@ export default function LandingPage() {
                 </div>
                 <div className="bg-white p-4 rounded-lg shadow-sm">
                   <h3 className="font-bold mb-2 flex items-center">
-                    <LineChart className="h-5 w-5 text-green-600 mr-2" />
-                    Hard Skills
-                  </h3>
-                  <p className="text-sm text-slate-600">
-                    Habilidade no uso das ferramentas essenciais para análise e visualização de dados, aplicada de forma
-                    eficaz em qualquer contexto.
-                  </p>
-                </div>
-                <div className="bg-white p-4 rounded-lg shadow-sm">
-                  <h3 className="font-bold mb-2 flex items-center">
                     <TrendingUp className="h-5 w-5 text-green-600 mr-2" />
                     Soft Skills
                   </h3>
@@ -302,128 +287,8 @@ export default function LandingPage() {
                     inovadoras e práticas.
                   </p>
                 </div>
-                <div className="bg-white p-4 rounded-lg shadow-sm">
-                  <h3 className="font-bold mb-2 flex items-center">
-                    <MessageSquare className="h-5 w-5 text-green-600 mr-2" />
-                    Soft Skills
-                  </h3>
-                  <p className="text-sm text-slate-600">
-                    Comunicação eficaz, adaptada a diferentes contextos. Gerencia o tempo para cumprir prazos e lidar
-                    com múltiplas demandas.
-                  </p>
-                </div>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 bg-green-600 text-white">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-6">Pronto para fazer a diferença?</h2>
-          <p className="text-xl mb-8 max-w-2xl mx-auto">
-            A Formação SmartES oferece tudo o que você precisa para se tornar um analista de dados pronto para novas
-            conquistas.
-          </p>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-3xl mx-auto mb-10">
-            <div className="bg-green-700 bg-opacity-50 p-6 rounded-lg">
-              <h3 className="font-bold text-xl mb-2">Crescimento acelerado da carreira</h3>
-            </div>
-            <div className="bg-green-700 bg-opacity-50 p-6 rounded-lg">
-              <h3 className="font-bold text-xl mb-2">Aumento expressivo de salário</h3>
-            </div>
-            <div className="bg-green-700 bg-opacity-50 p-6 rounded-lg">
-              <h3 className="font-bold text-xl mb-2">Reconhecimento e valorização</h3>
-            </div>
-          </div>
-
-          <p className="font-bold text-xl mb-8">A hora é agora! Vagas limitadas</p>
-
-          <div className="bg-white text-green-800 p-4 rounded-lg inline-block mb-8">
-            <p className="font-bold">
-              Em média, quem conclui a Formação tem um aumento salarial de 16% nos primeiros 12 meses.
-            </p>
-          </div>
-
-          <p className="text-xl mb-8">Qual é o preço de transformar sua carreira para sempre?</p>
-
-          <Link href="/disciplinas"> 
-            <Button size="lg" variant="outline" className="bg-white text-green-600 hover:bg-slate-100 border-white">
-              Quero começar minha jornada
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-          </Link>
-        </div>
-      </section>
-
-      {/* Pricing Section */}
-      <section id="planos" className="py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-slate-800 mb-4">Escolha sua trilha de aprendizado</h2>
-            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-              Cada módulo prepara você para o seguinte. Escolha fazer a Formação Completa com um super desconto de 20%
-              ou comece sua jornada selecionando os primeiros módulos da Formação SmartES
-            </p>
-          </div>
-
-          <div className="max-w-4xl mx-auto">
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-all">
-              <CardContent className="p-8">
-                <div className="flex flex-col md:flex-row gap-8 items-center">
-                  <div className="md:w-1/2">
-                    <h3 className="text-2xl font-bold mb-4">Profissional de Excel + Desenvolvedor Python</h3>
-                    <p className="text-slate-600 mb-4">Duração: 6 meses</p>
-
-                    <div className="flex flex-wrap gap-4 mb-6">
-                      <div className="flex items-center bg-green-100 text-green-800 px-3 py-1 rounded-full">
-                        <FileSpreadsheet className="h-4 w-4 mr-1" />
-                        EXCEL
-                      </div>
-                      <div className="flex items-center bg-blue-100 text-blue-800 px-3 py-1 rounded-full">
-                        <Code className="h-4 w-4 mr-1" />
-                        PYTHON
-                      </div>
-                      <div className="flex items-center bg-slate-100 text-slate-800 px-3 py-1 rounded-full opacity-50">
-                        <Database className="h-4 w-4 mr-1" />
-                        SQL
-                      </div>
-                      <div className="flex items-center bg-slate-100 text-slate-800 px-3 py-1 rounded-full opacity-50">
-                        <BarChart3 className="h-4 w-4 mr-1" />
-                        POWER BI
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="md:w-1/2 text-center md:text-right">
-                    <div className="mb-4">
-                      <h4 className="text-lg font-semibold">Investimento</h4>
-                      <p className="text-slate-500 line-through">De R$ 420,00</p>
-                      <p className="text-3xl font-bold text-green-600">
-                        por R$ 378,00 <span className="text-lg font-normal">/ mês</span>
-                      </p>
-                      <p className="text-slate-600">ou à vista R$ 1.890,00</p>
-                    </div>
-
-                    <Link href="#matricula" id="matricula">
-                      <Button size="lg" className="bg-green-600 hover:bg-green-700">
-                        Quero me matricular
-                      </Button>
-                    </Link>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="text-center mt-16">
-            <Link href="#empresas">
-              <Button variant="outline" size="lg" className="uppercase">
-                Veja também as vantagens de ter esse treinamento para sua equipe ou empresa
-              </Button>
-            </Link>
           </div>
         </div>
       </section>
@@ -475,11 +340,6 @@ export default function LandingPage() {
                 <li>
                   <Link href="#formacao" className="hover:text-white transition-colors">
                     A Formação
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#vantagens" className="hover:text-white transition-colors">
-                    Vantagens
                   </Link>
                 </li>
                 <li>
