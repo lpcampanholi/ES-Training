@@ -92,19 +92,16 @@ export default function InstrucoesPage({
           </div>
 
           <div className="mb-8 p-8">
-
-              <h3 className="text-xl text-center font-bold mb-4">Como funciona o teste adaptativo</h3>
-
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
                   <div className="bg-blue-100 p-2 rounded-full">
                     <Brain className="h-5 w-5 text-blue-600" />
                   </div>
                   <div>
-                    <p className="font-medium">Teste adaptativo</p>
+                    <p className="font-semibold">Teste adaptativo</p>
                     <p className="text-slate-600">
-                      O teste se adapta ao seu nível de conhecimento, ficando mais difícil ou mais fácil conforme suas
-                      respostas.
+                      O teste se adapta ao seu nível de conhecimento, ficando mais difícil conforme você
+                      vai passando de nível.
                     </p>
                   </div>
                 </div>
@@ -114,7 +111,7 @@ export default function InstrucoesPage({
                     <Award className="h-5 w-5 text-green-600" />
                   </div>
                   <div>
-                    <p className="font-medium">Níveis progressivos</p>
+                    <p className="font-semibold">Níveis progressivos</p>
                     <p className="text-slate-600">
                       O teste possui 4 níveis: Fundamental, Essencial, Avançado e Profissional. Você avança de nível ao
                       atingir média 8.0 ou superior.
@@ -127,7 +124,7 @@ export default function InstrucoesPage({
                     <CheckCircle className="h-5 w-5 text-amber-600" />
                   </div>
                   <div>
-                    <p className="font-medium">Responda com atenção</p>
+                    <p className="font-semibold">Responda com atenção</p>
                     <p className="text-slate-600">
                       Cada questão possui 4 alternativas com diferentes valores. Escolha a que melhor responde à
                       pergunta.
@@ -140,7 +137,7 @@ export default function InstrucoesPage({
                     <Clock className="h-5 w-5 text-purple-600" />
                   </div>
                   <div>
-                    <p className="font-medium">Tempo limitado</p>
+                    <p className="font-semibold">Tempo limitado</p>
                     <p className="text-slate-600">
                       Você terá 20 minutos para completar o teste. Fique atento ao contador no topo da tela.
                     </p>

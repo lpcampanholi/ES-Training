@@ -6,7 +6,7 @@ import type { QuestionFilters } from "@/types"
 import type { Question } from "@prisma/client"
 import { CreateQuestionDTO } from "@/types/dtos"
 
-export async function GET(request: NextRequest): Promise<NextResponse<Question[] | { error: string }>> {
+export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const subject = searchParams.get("subject") as QuestionFilters["subject"]

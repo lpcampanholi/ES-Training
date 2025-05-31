@@ -12,9 +12,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { BookOpen, Users, LogOut } from "lucide-react"
+import { BookOpen, Users, LogOut, House } from "lucide-react"
 import Image from "next/image"
-import { User } from "@/types"
+import { User } from "@/types/prisma"
 
 export default function AdminHeader({ user }: { user: User }) {
   return (
@@ -40,7 +40,7 @@ export default function AdminHeader({ user }: { user: User }) {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                <Avatar className="h-8 w-8">
+                <Avatar className="h-10 w-10">
                   <AvatarImage src={user.image || "/user.png"} alt={'icone do usuario'} />
                   <AvatarFallback>{user.name?.charAt(0)}</AvatarFallback>
                 </Avatar>
@@ -54,6 +54,12 @@ export default function AdminHeader({ user }: { user: User }) {
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link href="/" className="cursor-pointer">
+                  <House className="mr-2 h-4 w-4" />
+                  <span>Home</span>
+                </Link>
+              </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link href="/admin/questions" className="cursor-pointer">
                   <BookOpen className="mr-2 h-4 w-4" />

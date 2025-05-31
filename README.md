@@ -31,6 +31,7 @@ _________________
 26/05 - 1h  
 27/05 - 4h  
 30/05 - 5h
+31/05 - Início às 10:30
 
 ## Níveis
 
@@ -122,3 +123,18 @@ Então o usuário faz a quinta e última questão do nível.
 Recomendação Final:
 
 - Ao final do teste, o sistema recomenda o nível adequado para o usuário com base em seu desempenho.
+
+
+# Refinamento
+- Adicionar loading no botão da tela de registro
+- Deixar tela de resultado mais bonita
+- Corrigir o badge do nível do teste na tela de teste
+- Mudar regra de que é permitido apenas um e-mail por teste
+- Melhorar a Home, deixar mais simplificada
+- Corrigir barra de progresso da tela de teste
+- No CRUD de questões, ao invés de acionar o confirm do browser, acionar meu modal de confirmação
+- Ao clicar em algum select, não desativar a barra de rolagem da página (se possível, pesquisar, senão deixa)
+- Corrigir as cores dos trequinhos e arrumar os utils
+- Fechar o modal de edição de Questões *****
+- Corrigir DTOs das questões
+- Tamanho do Quase certa (7.0)

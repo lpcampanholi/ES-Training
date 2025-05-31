@@ -1,4 +1,4 @@
-import { Level } from "@/types"
+import { Level } from "@/types/prisma"
 
 export function getNextLevel(currentLevel: Level): Level {
   switch (currentLevel) {

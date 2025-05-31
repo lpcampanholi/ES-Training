@@ -6,16 +6,24 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { RichTextEditor } from "@/components/ui/rich-text-editor"
-import { QuestionFormData, Subject, Level } from "@/types"
+import { QuestionFormData } from "@/types"
+import { Subject, Level } from "@/types/prisma"
 import { Input } from "./ui/input"
 
 interface QuestionFormProps {
   initialData?: Partial<QuestionFormData>
   onSubmit: (data: QuestionFormData) => void
   isEditing?: boolean
+  onCancel: () => void
 }
 
-export default function QuestionForm({ initialData, onSubmit, isEditing = false }: QuestionFormProps) {
+export default function QuestionForm({
+  initialData,
+  onSubmit,
+  isEditing = false,
+  onCancel,
+}: QuestionFormProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [formData, setFormData] = useState<QuestionFormData>({
     text: initialData?.text || "",
     subject: initialData?.subject || Subject.excel,
@@ -86,15 +94,15 @@ export default function QuestionForm({ initialData, onSubmit, isEditing = false 
       alert("Pelo menos uma opção deve ser totalmente correta (valor 10.0)")
       return
     }
-
+    setIsSubmitting(true)
     onSubmit(formData)
+    setIsSubmitting(false)
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="flex gap-4">
         <div className="space-y-2">
-          <Label htmlFor="subject">Disciplina</Label>
           <Select value={formData.subject} onValueChange={(value) => handleSelectChange("subject", value)}>
             <SelectTrigger>
               <SelectValue placeholder="Selecione a disciplina" />
@@ -109,7 +117,6 @@ export default function QuestionForm({ initialData, onSubmit, isEditing = false 
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="level">Nível</Label>
           <Select value={formData.level} onValueChange={(value) => handleSelectChange("level", value)}>
             <SelectTrigger>
               <SelectValue placeholder="Selecione o nível" />
@@ -125,19 +132,16 @@ export default function QuestionForm({ initialData, onSubmit, isEditing = false 
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="text">Enunciado da Questão</Label>
+        <Label htmlFor="text">Enunciado</Label>
         <RichTextEditor
           value={formData.text}
           onChange={handleTextChange}
           placeholder="Digite o enunciado da questão..."
         />
-        <p className="text-sm text-slate-500 mt-1">
-          Use o editor acima para formatar o texto, adicionar imagens, tabelas e outros elementos.
-        </p>
       </div>
 
       <div className="space-y-4">
-        <Label>Alternativas (4 opções)</Label>
+        <Label>Alternativas</Label>
         {formData.options.map((option, index) => (
           <div key={index} className="grid grid-cols-12 gap-4 items-center">
             <div className="col-span-1">
@@ -170,8 +174,13 @@ export default function QuestionForm({ initialData, onSubmit, isEditing = false 
         ))}
       </div>
 
-      <div className="flex justify-end">
-        <Button type="submit">{isEditing ? "Salvar Alterações" : "Adicionar Questão"}</Button>
+      <div className="flex justify-end space-x-2">
+        <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
+          Cancelar
+        </Button>
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Salvando..." : isEditing ? "Salvar Alterações" : "Adicionar Questão"}
+        </Button>
       </div>
     </form>
   )

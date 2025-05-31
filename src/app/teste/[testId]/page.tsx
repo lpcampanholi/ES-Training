@@ -218,9 +218,9 @@ export default function TestePage({
 
         <div className="mb-6">
           <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-medium text-slate-600">Progresso do lote atual</span>
+            <span className="text-sm font-medium text-slate-600">Progresso do nível atual</span>
             <span className="text-sm font-medium text-slate-600">
-              {currentQuestionIndex + 1}/{currentBatch.length} (Questão {totalAnswered} total)
+              Questão {totalAnswered}
             </span>
           </div>
           <Progress value={progress} className="h-2" />

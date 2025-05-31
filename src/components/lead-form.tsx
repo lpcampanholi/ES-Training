@@ -9,7 +9,8 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
-import type { Lead, LeadFormData, Subject, Level, LeadStage } from "@/types"
+import type { LeadFormData } from "@/types"
+import type { Lead, Subject, Level, LeadStage } from "@/types/prisma"
 
 interface LeadFormProps {
   lead?: Lead
@@ -18,7 +19,12 @@ interface LeadFormProps {
   isSubmitting?: boolean
 }
 
-export function LeadForm({ lead, onSubmit, onCancel, isSubmitting = false }: LeadFormProps) {
+export function LeadForm({
+  lead,
+  onSubmit,
+  onCancel,
+  isSubmitting = false
+}: LeadFormProps) {
   const [formData, setFormData] = useState<LeadFormData>({
     name: lead?.name || "",
     email: lead?.email || "",

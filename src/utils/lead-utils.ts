@@ -1,4 +1,4 @@
-import { LeadStage } from "@/types"
+import { LeadStage } from "@/types/prisma"
 
 export function getLeadStageName(stage: LeadStage): string {
   switch (stage) {

@@ -21,8 +21,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Level, Question, QuestionFilters, QuestionFormData, Subject } from "@/types"
+import { QuestionFilters, QuestionFormData } from "@/types"
+import { Level, Question, Subject } from "@/types/prisma"
 import { QuestionService } from "@/services/question-service"
+
 
 export default function QuestionsPage() {
   const [questions, setQuestions] = useState<Question[]>([])
@@ -63,12 +65,13 @@ export default function QuestionsPage() {
     try {
       const newQuestion = await QuestionService.createQuestion(questionData)
       setQuestions((prev) => [newQuestion, ...prev])
-      setIsDialogOpen(false)
-      toast("Questão adicionada com sucesso!")
     } catch (error) {
       toast("Erro", {
         description: error instanceof Error ? error.message : "Não foi possível adicionar a questão",
       })
+    } finally {
+      setIsDialogOpen(false)
+      toast("Questão adicionada com sucesso!")
     }
   }
 
@@ -113,55 +116,59 @@ export default function QuestionsPage() {
           </div>
       ) : (
         <>
-          <div className="flex justify-between items-center mb-8">
+          <div className="flex justify-between items-center flex-wrap gap-y-4 mb-8">
             <h1 className="text-3xl font-bold text-slate-800">Questões</h1>
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogTrigger asChild>
-                <Button>
-                  <Plus className="w-4 h-4 mr-2" />
-                  Adicionar Questão
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-[70%] max-h-[90vh] overflow-y-auto">
-                <DialogHeader>
-                  <DialogTitle>Nova Questão</DialogTitle>
-                </DialogHeader>
-                  <QuestionForm onSubmit={handleAddQuestion} />
-              </DialogContent>
-            </Dialog>
-          </div>
 
-          <div className="mb-6 flex flex-wrap gap-4">
-            <div className="w-full md:w-64">
-              <Select
-                value={selectedSubject}
-                onValueChange={setSelectedSubject}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Filtrar por disciplina" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todas as disciplinas</SelectItem>
-                  <SelectItem value="excel">Excel</SelectItem>
-                  <SelectItem value="sql">SQL</SelectItem>
-                  <SelectItem value="python">Python</SelectItem>
-                  <SelectItem value="powerbi">Power BI</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="w-full md:w-64">
-              <Select value={selectedLevel} onValueChange={setSelectedLevel}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Filtrar por nível" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todos os níveis</SelectItem>
-                  <SelectItem value="fundamental">Fundamental</SelectItem>
-                  <SelectItem value="essencial">Essencial</SelectItem>
-                  <SelectItem value="avancado">Avançado</SelectItem>
-                  <SelectItem value="profissional">Profissional</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="flex flex-wrap items-center gap-4">
+              <div>
+                <Select value={selectedSubject} onValueChange={setSelectedSubject}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Filtrar por disciplina" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas as disciplinas</SelectItem>
+                    <SelectItem value="excel">Excel</SelectItem>
+                    <SelectItem value="sql">SQL</SelectItem>
+                    <SelectItem value="python">Python</SelectItem>
+                    <SelectItem value="powerbi">Power BI</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Select value={selectedLevel} onValueChange={setSelectedLevel}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Filtrar por nível" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos os níveis</SelectItem>
+                    <SelectItem value="fundamental">Fundamental</SelectItem>
+                    <SelectItem value="essencial">Essencial</SelectItem>
+                    <SelectItem value="avancado">Avançado</SelectItem>
+                    <SelectItem value="profissional">Profissional</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button>
+                    <Plus className="w-4 h-4" />
+                    Adicionar Questão
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-[70%] h-[90vh]">
+                  <div className="flex flex-col h-full overflow-y-auto pb-8 pr-8 m-4">
+                    <DialogHeader className="shrink-0 pb-4">
+                      <DialogTitle>Nova Questão</DialogTitle>
+                    </DialogHeader>
+                    <QuestionForm
+                      onSubmit={handleAddQuestion}
+                      onCancel={() => setIsDialogOpen(false)}
+                    />
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
 
@@ -186,6 +193,7 @@ export default function QuestionsPage() {
                   index={index}
                   onDelete={() => handleDeleteQuestion(question.id)}
                   onUpdate={handleUpdateQuestion}
+                  onCloseDialog={() => setIsDialogOpen(false)}
                 />
               ))}
             </div>

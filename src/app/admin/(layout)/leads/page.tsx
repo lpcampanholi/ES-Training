@@ -1,10 +1,10 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { DataTable } from "@/components/ui/data-table"
 import { Button } from "@/components/ui/button"
-import { Eye, Download, Edit, Trash2, Plus } from "lucide-react"
+import { Eye, Download, Edit, Trash2, Plus, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
@@ -12,9 +12,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Badge } from "@/components/ui/badge"
 import { LeadForm } from "@/components/lead-form"
 import { LeadService } from "@/services/lead-service"
-import { getLevelName, getLevelColor, getSubjectName, getLeadStageName, getLeadStageColor } from "@/utils"
-import type { Lead, LeadFormData } from "@/types"
+import { getLevelName, getSubjectName, getLeadStageName, getLeadStageColor } from "@/utils"
+import type { LeadFormData } from "@/types"
 import type { ColumnDef } from "@tanstack/react-table"
+import { Lead } from "@/types/prisma"
 
 export default function LeadsPage() {
   const [leads, setLeads] = useState<Lead[]>([])
@@ -89,8 +90,7 @@ export default function LeadsPage() {
     link.click()
     document.body.removeChild(link)
 
-    toast({
-      title: "Exportação concluída",
+    toast("Exportação concluída",{
       description: "Os leads foram exportados com sucesso",
     })
   }
@@ -112,24 +112,20 @@ export default function LeadsPage() {
     try {
       if (dialogMode === "create") {
         await LeadService.createLead(data)
-        toast({
-          title: "Sucesso",
+        toast("Sucesso", {
           description: "Lead criado com sucesso",
         })
       } else if (dialogMode === "edit" && selectedLead) {
         await LeadService.updateLead(selectedLead.id, data)
-        toast({
-          title: "Sucesso",
+        toast("Sucesso", {
           description: "Lead atualizado com sucesso",
         })
       }
       await fetchLeads()
       closeDialog()
     } catch (error: any) {
-      toast({
-        title: "Erro",
-        description: error.message || "Erro ao salvar lead",
-        variant: "destructive",
+      toast("Erro ao salvar lead", {
+        description: error.message
       })
     } finally {
       setIsSubmitting(false)
@@ -143,16 +139,13 @@ export default function LeadsPage() {
 
     try {
       await LeadService.deleteLead(leadId)
-      toast({
-        title: "Sucesso",
+      toast("Sucesso", {
         description: "Lead excluído com sucesso",
       })
       await fetchLeads()
     } catch (error: any) {
-      toast({
-        title: "Erro",
-        description: error.message || "Erro ao excluir lead",
-        variant: "destructive",
+      toast("Erro ao excluir lead", {
+        description: error.message
       })
     }
   }
@@ -170,22 +163,6 @@ export default function LeadsPage() {
       accessorKey: "phone",
       header: "Telefone",
       cell: ({ row }) => row.original.phone || "-",
-    },
-    {
-      accessorKey: "testSubject",
-      header: "Disciplina",
-      cell: ({ row }) => {
-        const subject = row.original.testSubject
-        return subject ? <Badge variant="outline">{getSubjectName(subject)}</Badge> : "-"
-      },
-    },
-    {
-      accessorKey: "testLevel",
-      header: "Nível",
-      cell: ({ row }) => {
-        const level = row.original.testLevel
-        return level ? <Badge className={getLevelColor(level)}>{getLevelName(level)}</Badge> : "-"
-      },
     },
     {
       accessorKey: "stage",
@@ -231,23 +208,22 @@ export default function LeadsPage() {
         <h1 className="text-3xl font-bold text-slate-800">Leads</h1>
         <div className="flex gap-2">
           <Button onClick={() => openDialog("create")}>
-            <Plus className="h-4 w-4 mr-2" />
+            <Plus className="h-4 w-4" />
             Novo Lead
           </Button>
           <Button variant="outline" onClick={handleExportCSV}>
-            <Download className="h-4 w-4 mr-2" />
+            <Download className="h-4 w-4" />
             Exportar CSV
           </Button>
         </div>
       </div>
 
       <Card>
-        <CardHeader>
-          <CardTitle>Lista de Leads</CardTitle>
-        </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="text-center py-10">Carregando...</div>
+            <div className="flex justify-center py-10">
+              <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
+            </div>
           ) : (
             <DataTable columns={columns} data={leads} searchColumn="name" searchPlaceholder="Buscar por nome..." />
           )}

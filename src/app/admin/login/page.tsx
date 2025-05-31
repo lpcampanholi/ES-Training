@@ -36,7 +36,7 @@ export default function LoginPage() {
         return
       }
 
-      router.push("/admin/dashboard/questions")
+      router.push("/admin/questions")
     } catch (error) {
       setError("Ocorreu um erro ao fazer login")
       setIsLoading(false)
@@ -52,13 +52,6 @@ export default function LoginPage() {
             <div className="w-20 h-1 bg-blue-500 mx-auto mb-4 rounded-full"></div>
             <p className="text-slate-600">Acesse o painel de administração</p>
           </div>
-
-          {error && (
-            <Alert variant="destructive" className="mb-6">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
 
           <form onSubmit={handleSubmit} className="w-full space-y-5">
             <div className="space-y-2">
@@ -100,6 +93,13 @@ export default function LoginPage() {
                 />
               </div>
             </div>
+
+            {error && (
+            <Alert variant="destructive" className="mb-6">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+            )}
 
             <Button
               type="submit"

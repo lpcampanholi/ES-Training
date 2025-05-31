@@ -6,16 +6,16 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const leadTest = await prisma.leadTest.findUnique({
+    const test = await prisma.test.findUnique({
       where: { id: params.id },
     })
 
-    if (!leadTest) {
+    if (!test) {
       return NextResponse.json({ error: "Teste não encontrado" }, { status: 404 })
     }
 
     const questions = await prisma.question.findMany({
-      where: { subject: leadTest.subject, level: leadTest.level },
+      where: { subject: test.subject, level: test.level },
       include: { options: true },
       take: 3,
     })
@@ -33,9 +33,9 @@ export async function GET(
     })
 
     return NextResponse.json({
-      testId: leadTest.id,
+      testId: test.id,
       questions: questionsWithShuffledOptions,
-      currentLevel: leadTest.level,
+      currentLevel: test.level,
     })
   } catch (error) {
     console.error("Erro ao carregar teste:", error)

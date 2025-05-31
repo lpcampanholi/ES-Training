@@ -25,11 +25,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "ID do teste e respostas são obrigatórios" }, { status: 400 })
     }
 
-    const leadTest = await prisma.leadTest.findUnique({
+    const test = await prisma.test.findUnique({
       where: { id: testId },
     })
 
-    if (!leadTest) {
+    if (!test) {
       return NextResponse.json({ error: "Teste não encontrado" }, { status: 404 })
     }
 
@@ -37,16 +37,16 @@ export async function POST(request: NextRequest) {
     const answerEntries = Object.entries(answers) // [ [questionId, optionId], ... ]
 
     const userAnswersData = answerEntries.map(([questionId, optionId]) => ({
-      leadTestId: testId,
+      testId,
       questionId,
       optionId,
     }))
 
-    await prisma.userAnswer.createMany({ data: userAnswersData })
+    await prisma.answer.createMany({ data: userAnswersData })
 
     // Buscar todas as respostas do usuário nesse teste
-    const allAnswers = await prisma.userAnswer.findMany({
-      where: { leadTestId: testId },
+    const allAnswers = await prisma.answer.findMany({
+      where: { testId: testId },
       include: {
         question: true,
         option: true,
@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
     })
 
     const currentLevelAnswers = allAnswers.filter(
-      (a) => a.question.level === leadTest.level
+      (a) => a.question.level === test.level
     )
 
     const answeredCount = currentLevelAnswers.length
@@ -63,9 +63,9 @@ export async function POST(request: NextRequest) {
 
     // Finalizar teste se for forçado
     if (isComplete || answeredCount >= 5) {
-      const recommendedLevel = getRecommendedLevel(currentAverage, leadTest.level)
+      const recommendedLevel = getRecommendedLevel(currentAverage, test.level)
 
-      await prisma.leadTest.update({
+      await prisma.test.update({
         where: { id: testId },
         data: {
           score: currentAverage,
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
         isComplete: true,
         score: currentAverage,
         recommendedLevel,
-        currentLevel: leadTest.level,
+        currentLevel: test.level,
         passedLevel: currentAverage >= AVERAGE,
       })
     }
@@ -86,11 +86,11 @@ export async function POST(request: NextRequest) {
     // Lógica de avanço de nível após 3 ou 4 respostas
     if (answeredCount === 3 || answeredCount === 4) {
       if (currentAverage >= AVERAGE) {
-        const nextLevel = getNextLevel(leadTest.level)
+        const nextLevel = getNextLevel(test.level)
 
-        if (nextLevel === leadTest.level) {
+        if (nextLevel === test.level) {
           // Já está no nível máximo
-          await prisma.leadTest.update({
+          await prisma.test.update({
             where: { id: testId },
             data: {
               score: currentAverage,
@@ -103,7 +103,7 @@ export async function POST(request: NextRequest) {
             isComplete: true,
             score: currentAverage,
             recommendedLevel: nextLevel,
-            currentLevel: leadTest.level,
+            currentLevel: test.level,
             passedLevel: true,
             message: "Parabéns! Você atingiu o nível máximo.",
           })
@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
         // Buscar 3 novas questões do próximo nível
         const newQuestions = await prisma.question.findMany({
           where: {
-            subject: leadTest.subject,
+            subject: test.subject,
             level: nextLevel,
             id: {
               notIn: allAnswers.map((a) => a.questionId),
@@ -124,7 +124,7 @@ export async function POST(request: NextRequest) {
 
         if (newQuestions.length < 3) {
           // Finaliza porque não tem questões suficientes no próximo nível
-          await prisma.leadTest.update({
+          await prisma.test.update({
             where: { id: testId },
             data: {
               score: currentAverage,
@@ -137,14 +137,14 @@ export async function POST(request: NextRequest) {
             isComplete: true,
             score: currentAverage,
             recommendedLevel: nextLevel,
-            currentLevel: leadTest.level,
+            currentLevel: test.level,
             passedLevel: true,
             message: "Você avançaria de nível, mas não há questões suficientes disponíveis.",
           })
         }
 
         // Avançar de nível
-        await prisma.leadTest.update({
+        await prisma.test.update({
           where: { id: testId },
           data: { level: nextLevel },
         })
@@ -156,16 +156,16 @@ export async function POST(request: NextRequest) {
             options: [...q.options].sort(() => Math.random() - 0.5),
           })),
           currentLevel: nextLevel,
-          previousLevel: leadTest.level,
+          previousLevel: test.level,
           isComplete: false,
           passedLevel: true,
-          message: `Você superou o nível ${leadTest.level} e agora está no nível ${nextLevel}.`,
+          message: `Você superou o nível ${test.level} e agora está no nível ${nextLevel}.`,
         })
       } else {
         const remaining = 5 - answeredCount
         if (!canReachAverage(totalScore, answeredCount, remaining)) {
           // Finalizar o teste — não é possível atingir média 8.0
-          await prisma.leadTest.update({
+          await prisma.test.update({
             where: { id: testId },
             data: {
               score: currentAverage,
@@ -177,8 +177,8 @@ export async function POST(request: NextRequest) {
             testId,
             isComplete: true,
             score: currentAverage,
-            recommendedLevel: leadTest.level,
-            currentLevel: leadTest.level,
+            recommendedLevel: test.level,
+            currentLevel: test.level,
             passedLevel: false,
             message: "Não é possível atingir a média 8.0 com as próximas questões. Teste finalizado.",
           })
@@ -189,8 +189,8 @@ export async function POST(request: NextRequest) {
     // Buscar nova questão do nível atual (caso ainda não completou 5)
     const additionalQuestions = await prisma.question.findMany({
       where: {
-        subject: leadTest.subject,
-        level: leadTest.level,
+        subject: test.subject,
+        level: test.level,
         id: {
           notIn: allAnswers.map((a) => a.questionId),
         },
@@ -200,7 +200,7 @@ export async function POST(request: NextRequest) {
     })
 
     if (additionalQuestions.length === 0) {
-      await prisma.leadTest.update({
+      await prisma.test.update({
         where: { id: testId },
         data: {
           score: currentAverage,
@@ -212,8 +212,8 @@ export async function POST(request: NextRequest) {
         testId,
         isComplete: true,
         score: currentAverage,
-        recommendedLevel: getRecommendedLevel(currentAverage, leadTest.level),
-        currentLevel: leadTest.level,
+        recommendedLevel: getRecommendedLevel(currentAverage, test.level),
+        currentLevel: test.level,
         passedLevel: currentAverage >= AVERAGE,
         message: "Não há mais questões disponíveis para continuar.",
       })
@@ -226,7 +226,7 @@ export async function POST(request: NextRequest) {
         ...q,
         options: [...q.options].sort(() => Math.random() - 0.5),
       })),
-      currentLevel: leadTest.level,
+      currentLevel: test.level,
       isComplete: false,
       currentAverage,
       passedLevel: false

@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
       options: [...question.options].sort(() => Math.random() - 0.5),
     }))
 
-    const leadTest = await prisma.leadTest.create({
+    const test = await prisma.test.create({
       data: {
         leadId: lead.id,
         subject,
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json({
-      testId: leadTest.id,
+      testId: test.id,
       questions: questionsWithShuffledOptions,
       currentLevel: level,
     })

@@ -29,7 +29,7 @@ model Question {
   updatedAt DateTime   @updatedAt
 
   options Option[]
-  answers LeadAnswer[]
+  answers Answer[]
 
   @@map("questions")
 }
@@ -43,7 +43,7 @@ model Option {
   updatedAt  DateTime @updatedAt
 
   question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  answers    LeadAnswer[]
+  answers    Answer[]
 
   @@map("options")
 }
@@ -60,12 +60,12 @@ model Test {
   updatedAt  DateTime   @updatedAt
 
   lead       Lead       @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  answers    LeadAnswer[]
+  answers    Answer[]
 
-  @@map("lead_tests")
+  @@map("tests")
 }
 
-model LeadAnswer {
+model Answer {
   id         String    @id @default(cuid())
   testId     String
   questionId String
@@ -76,7 +76,7 @@ model LeadAnswer {
   question   Question  @relation(fields: [questionId], references: [id])
   option     Option?   @relation(fields: [optionId], references: [id])
 
-  @@map("lead_answers")
+  @@map("answers")
 }
 
 model Lead {

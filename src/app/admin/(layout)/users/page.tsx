@@ -71,10 +71,10 @@ export default function UsersPage() {
 
   return (
     <div>
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold text-slate-800">Usuários</h1>
+      </div>
       <Card>
-        <CardHeader>
-          <CardTitle>Lista de Usuários</CardTitle>
-        </CardHeader>
         <CardContent>
           {isLoading ? (
             <div className="flex justify-center py-10">

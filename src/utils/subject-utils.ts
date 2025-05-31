@@ -1,4 +1,4 @@
-import { Subject } from "@/types"
+import { Subject } from "@/types/prisma"
 
 export function getSubjectName(subject: Subject): string {
   switch (subject) {

@@ -2,9 +2,10 @@ export type {
   Question,
   Option,
   Test,
-  LeadAnswer,
   User,
   Lead,
+} from "@prisma/client"
+export {
   Subject,
   Level,
   Role,
