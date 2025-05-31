@@ -211,7 +211,7 @@ export default function TestePage({
 
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-2">
-            <div className={`${getSubjectColor(currentQuestion.subject)} text-sm font-medium px-4 rounded-full border-1 border-slate-200`}>
+            <div className={`${getSubjectColor(currentQuestion.subject)} text-sm font-medium px-3 rounded-full border-1 border-slate-200`}>
               {currentQuestion.subject === "powerbi" ? "Power BI" : currentQuestion.subject.toUpperCase()}
             </div>
             <Badge className={getLevelColor(currentLevel)}>{getLevelName(currentLevel)}</Badge>

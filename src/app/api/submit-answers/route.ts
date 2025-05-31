@@ -6,8 +6,8 @@ import { SubmitAnswersDTO } from "@/types/dtos";
 
 const AVERAGE = 8.0;
 
-function canReachAverage(currentAverage: number): boolean {
-  return (currentAverage + 10) / 2 >= AVERAGE;
+function canReachAverage(currentSum: number): boolean {
+  return (currentSum + 10) / (2) >= AVERAGE;
 }
 
 function getRecommendedLevel(average: number, currentLevel: Level): Level {
@@ -157,7 +157,7 @@ export async function POST(request: NextRequest) {
           message: `Você superou o nível ${test.level} e agora está no nível ${nextLevel}.`,
         });
       } else {
-        if (!canReachAverage(currentAverage)) {
+        if (!canReachAverage(totalScore)) {
           await prisma.test.update({
             where: { id: testId },
             data: { score: currentAverage, finishedAt: new Date() },
@@ -172,7 +172,7 @@ export async function POST(request: NextRequest) {
             recommendedLevel: test.level,
             currentLevel: test.level,
             passedLevel: false,
-            message: "Não é possível atingir a média 8.0 com a próxima questão. Teste finalizado.",
+            message: `Não é possível atingir a média ${AVERAGE} com a próxima questão. Teste finalizado.`,
           });
         }
       }

@@ -246,5 +246,4 @@ Notas: 4, 4, 4 → Média = 4
 ❌ Resultado: Finaliza
 
 
-
 caminhos 3 e 8  

@@ -153,6 +153,7 @@ export default function RegistroPage({
                 <Input
                   id="phone"
                   name="phone"
+                  type="number"
                   value={formData.phone || ""}
                   onChange={handleChange}
                   className="pl-10 py-6 rounded-xl border-slate-200 focus:border-blue-500 focus:ring-blue-500"
