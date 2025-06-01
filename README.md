@@ -31,7 +31,7 @@ _________________
 26/05 - 1h  
 27/05 - 4h  
 30/05 - 5h
-31/05 - Início às 10:30
+31/05 - 7h
 
 ## Níveis
 
@@ -93,8 +93,6 @@ Totalmente certa: 100
 
 # Regra do teste:
 
-O teste possui deve possui a seguinte regra:
-
 - Níveis do teste (nesta ordem): fundamental, essencial, avançado e profissional.
 
 - O usuário inicia o teste no primeiro nível: fundamental.
@@ -109,12 +107,6 @@ O teste possui deve possui a seguinte regra:
 	- Se for possível atingir média 8.0, o usuário faz mais uma pergunta deste nível.
 
 Então o usuário faz a quarta questão do nível. Então deve ser feito a avaliação novamente.
-
-Regra da avaliação:
-
-✅ Após 3 ou 4 questões, se a média atual somada com 10 e dividida por 2 for >= 8, o usuário continua o teste.
-❌ Se (média + 10) / 2 < 8, o teste é finalizado.
-
 
 Então o usuário faz a quinta e última questão do nível.
 
@@ -135,7 +127,6 @@ Recomendação Final:
 
 É recomendado que cada questão deve ter exatamente uma opção de cada tipo (10, 7, 4, 0)
 
-
 # Refinamento
 - Adicionar loading no botão da tela de registro
 - Deixar tela de resultado mais bonita
@@ -151,7 +142,7 @@ Recomendação Final:
 - Tamanho do Quase certa (7.0)
 - campo telefone na tela de registros deve aceitar apenas números
 
-
+REGRA Se (média + 10) / 2 >= 8, o usuário pode continuar.
 
 # ✅ Testes Manuais - Lógica do Teste de Nivelamento
 > Alternativas possíveis: **0, 4, 7, 10**
@@ -245,5 +236,34 @@ Notas: 4, 4, 4 → Média = 4
 
 ❌ Resultado: Finaliza
 
+---
 
-caminhos 3 e 8  
+10, 10, 10
+Passou, média 10
+
+10, 10, 7
+Passou, média 9
+
+10, 7, 7
+Passou, média 8
+
+10, 7 e 4
+Mèdia: 21 / 3 = 7
+Manda a quarta questão?
+31 / 4 = 7,75 -> Teste não continua
+
+
+🧪 **Caminho 3: Faz 3, (média + 10)/2 >= 8 → Faz 4ª questão, então Finaliza**  
+Notas: 7, 7, 7 → Média = 7  
+
+🔍 Verificação: (7 + 10)/2 = 8.5 ✅  
+
+➡️ 4ª questão: 4  
+Nova média: (7+7+7+4)/4 = 6.25  
+
+🔍 Verificação: (6.25 + 10)/2 = 8.125 ✅ → Faz 5ª  
+
+5ª questão: 4  
+Média final: (7+7+7+4+4)/5 = 5.8 ❌  
+
+❌ Resultado: Finaliza sem avançar

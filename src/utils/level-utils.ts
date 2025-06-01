@@ -3,15 +3,16 @@ import { Level } from "@/types/prisma"
 export function getNextLevel(currentLevel: Level): Level {
   switch (currentLevel) {
     case "fundamental":
-      return "essencial" as Level
+      return "essencial"
     case "essencial":
-      return "avancado" as Level
+      return "avancado"
     case "avancado":
-      return "profissional" as Level
+      return "profissional"
     default:
       return currentLevel
   }
 }
+
 
 export function getLevelName(level: Level): string {
   switch (level) {

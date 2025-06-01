@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { getNextLevel } from "@/utils";
 import type { Level } from "@prisma/client";
 import { SubmitAnswersDTO } from "@/types/dtos";
+import { getNextLevel } from "@/utils";
 
 const AVERAGE = 8.0;
 
-function canReachAverage(currentSum: number): boolean {
-  return (currentSum + 10) / (2) >= AVERAGE;
+function canReachAverage(currentSum: number, currentCount: number): boolean {
+  return (currentSum + 10) / (currentCount + 1) >= AVERAGE;
 }
 
 function getRecommendedLevel(average: number, currentLevel: Level): Level {
@@ -48,14 +48,26 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Teste não encontrado" }, { status: 404 });
     }
 
-    const answerEntries = Object.entries(answers);
-    const userAnswersData = answerEntries.map(([questionId, optionId]) => ({
-      testId,
-      questionId,
-      optionId,
-    }));
+    const existingAnswers = await prisma.answer.findMany({
+      where: {
+        testId,
+        questionId: { in: Object.keys(answers) },
+      },
+    })
 
-    await prisma.answer.createMany({ data: userAnswersData });
+    const existingQuestionIds = new Set(existingAnswers.map(a => a.questionId))
+
+    const newAnswers = Object.entries(answers)
+      .filter(([questionId]) => !existingQuestionIds.has(questionId))
+      .map(([questionId, optionId]) => ({
+        testId,
+        questionId,
+        optionId,
+      }))
+
+    if (newAnswers.length > 0) {
+      await prisma.answer.createMany({ data: newAnswers })
+    }
 
     const allAnswers = await prisma.answer.findMany({
       where: { testId },
@@ -68,6 +80,9 @@ export async function POST(request: NextRequest) {
     const currentAverage = answeredCount > 0 ? totalScore / answeredCount : 0;
 
     if (isComplete || answeredCount >= 5) {
+      console.log("entrou aqui------------------------------------------------------------------------------------------------");
+      console.log("1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111");
+      console.log("answeredCount", answeredCount);
       const recommendedLevel = getRecommendedLevel(currentAverage, test.level);
 
       await prisma.test.update({
@@ -88,6 +103,9 @@ export async function POST(request: NextRequest) {
     }
 
     if (answeredCount === 3 || answeredCount === 4) {
+      console.log("entrou aqui------------------------------------------------------------------------------------------------")
+      console.log("22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222");
+      console.log("answeredCount", answeredCount);
       if (currentAverage >= AVERAGE) {
         const nextLevel = getNextLevel(test.level);
 

@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import QuestionForm from "@/components/question-form"
 import parse from "html-react-parser"
 import { Badge } from "@/components/ui/badge"
-import { getLevelColor, getValueColor, getValueText } from "@/utils"
+import { getLevelColor, getSubjectColor, getValueColor, getValueText } from "@/utils"
 import { QuestionFormData, FrontendQuestion } from "@/types"
 import { useState } from "react"
 
@@ -36,7 +36,7 @@ export default function QuestionItem({
           <div className="flex gap-4 mt-1">
             <h3 className="font-semibold text-lg">Questão {index + 1}</h3>
             <div className="flex gap-2">
-              <Badge variant="outline">{question.subject}</Badge>
+              <Badge className={`${getSubjectColor(question.subject)} text-sm font-medium px-3 rounded-full border-1 border-slate-200`} variant="outline">{question.subject}</Badge>
               <Badge className={getLevelColor(question.level)}>{question.level}</Badge>
             </div>
           </div>

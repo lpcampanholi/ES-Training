@@ -343,13 +343,13 @@ export default function LandingPage() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="#planos" className="hover:text-white transition-colors">
-                    Planos
+                  <Link href="#modulos" className="hover:text-white transition-colors">
+                    Módulos
                   </Link>
                 </li>
                 <li>
-                  <Link href="#empresas" className="hover:text-white transition-colors">
-                    Para Empresas
+                  <Link href="#vantagens" className="hover:text-white transition-colors">
+                    Vantagens
                   </Link>
                 </li>
               </ul>
