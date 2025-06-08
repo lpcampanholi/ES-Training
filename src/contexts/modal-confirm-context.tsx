@@ -43,16 +43,16 @@ export const ModalConfirmProvider = ({ children }: { children: React.ReactNode }
       {children}
 
       <Dialog open={!!modalData} onOpenChange={handleClose}>
-        <DialogContent>
+        <DialogContent className="rounded-xl max-w-4/5 sm:max-w-md p-4">
           <DialogHeader>
-            <DialogTitle>{modalData?.title}</DialogTitle>
-            <DialogDescription>{modalData?.message}</DialogDescription>
+            <DialogTitle className="font-extrabold text-[#005345] text-xl mb-2">{modalData?.title}</DialogTitle>
+            <DialogDescription className="text-base mb-2">{modalData?.message}</DialogDescription>
           </DialogHeader>
-          <DialogFooter className="flex justify-end gap-2">
-            <Button variant="outline" onClick={handleClose}>
+          <DialogFooter className="flex justify-end gap-4">
+            <Button variant="outline" className="py-6" onClick={handleClose}>
               Cancelar
             </Button>
-            <Button onClick={handleConfirm} className="bg-red-600 hover:bg-red-700 text-white">
+            <Button onClick={handleConfirm} className="bg-[#ff7100] hover:bg-[#ff8f36] text-white py-6">
               Confirmar
             </Button>
           </DialogFooter>

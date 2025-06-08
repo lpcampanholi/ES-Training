@@ -7,6 +7,8 @@ mysql -u root -p
 ```
 senha: 1234
 
+npx prisma db push --force-reset  
+
 database: testes_online
 
 # Usuário Administrador:
@@ -34,14 +36,14 @@ _________________
 31/05 - 7h
 01/06 - 2h
 05/06 - 2h
-07/06 - 2h de manhã. à tarde: início às 15:40
+07/06 - 4h
+08/06 - 6h
 
 ## Níveis
 
 - Fundamental
 - Essencial
 - Avançado
-- Profissional (só do Excel)
 
 Formação completa - 12 créditos - 3 por módulo  
 
@@ -63,7 +65,7 @@ Quantos alunos tem crédito pra participar
 
 TURMAS - Calendário das turmas  
 
-ESTUDANTES - qual módulo (formação Smart e Profissional do Excel)  
+ESTUDANTES - qual módulo
 
 *INDICAÇÃO* - liste 10 contatos e ganhe até 10% de desconto na formação da excel solutions  
 
@@ -76,10 +78,9 @@ Popular o banco:
 npx tsx .\src\scripts\seed-data.ts 
 ```
 
-# Regra do teste:
+# Regra do teste:W
 
-- Níveis do teste (nesta ordem): fundamental, essencial, avançado e profissional.
-
+- Níveis do teste (nesta ordem): fundamental, essencial e avançado.
 - O usuário inicia o teste no primeiro nível: fundamental.
 
 - No início de cada nível, o usuário começa com 3 questões obrigatórias desse nível.

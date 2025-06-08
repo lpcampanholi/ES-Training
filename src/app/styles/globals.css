@@ -136,10 +136,6 @@ body {
   @apply text-lg font-bold mb-2;
 }
 
-.rich-text-content p {
-  @apply mb-4;
-}
-
 .rich-text-content ul {
   @apply list-disc pl-5 mb-4;
 }
@@ -164,17 +160,23 @@ body {
   @apply max-w-full h-auto my-4 rounded-md;
 }
 
+/* Tornando a tabela responsiva */
 .rich-text-content table {
   @apply w-full border-collapse my-4;
 }
 
 .rich-text-content table th,
 .rich-text-content table td {
-  @apply border border-slate-300 p-2;
+  @apply border border-slate-300 p-2 text-xs;
 }
 
 .rich-text-content table th {
   @apply bg-slate-100;
+}
+
+/* Envolvendo a tabela em um contêiner com rolagem horizontal */
+.rich-text-content .table-container {
+  @apply overflow-x-auto;
 }
 
 .rich-text-content pre {
@@ -184,6 +186,7 @@ body {
 .rich-text-content code {
   @apply bg-slate-100 px-1 py-0.5 rounded text-sm;
 }
+
 
 /* Animações personalizadas */
 @keyframes fadeIn {

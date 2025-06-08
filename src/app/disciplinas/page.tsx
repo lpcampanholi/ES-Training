@@ -11,10 +11,10 @@ export default function DisciplinasPage() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-[#005345]">
       <div className="w-full max-w-4xl p-8 bg-white rounded-2xl min-h-[85vh] shadow-sm flex flex-col justify-center">
-        <Link href="/" className="inline-flex items-center text-[#005345] hover:text-[#3e9b8c] mb-6 transition-colors">
+        {/* <Link href="/" className="inline-flex items-center text-[#005345] hover:text-[#3e9b8c] mb-6 transition-colors">
           <ArrowLeft className="w-4 h-4 mr-2" />
           Voltar
-        </Link>
+        </Link> */}
 
         <div className="flex flex-col items-center justify-center py-6 flex-1">
           <div className="mb-10 text-center">
@@ -25,7 +25,7 @@ export default function DisciplinasPage() {
 
           {isLoading ? (
             <div className="text-center py-10">
-              <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+              <Loader2 className="h-7 w-7 text-[#005345] animate-spin mx-auto mb-4" />
             </div>
           ) : error ? (
             <div className="text-center py-10 text-red-500">{error}</div>

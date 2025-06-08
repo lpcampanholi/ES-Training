@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Award, ArrowRight } from "lucide-react"
 import confetti from "canvas-confetti"
 import { getLevelName } from "@/utils"
-import type { Level } from "@/types"
+import { Level } from "@prisma/client"
 
 export interface CelebrationModalProps {
   isOpen: boolean
@@ -30,9 +30,9 @@ export function CelebrationModal({ isOpen, onClose, previousLevel, nextLevel, me
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="rounded-xl max-w-4/5 sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-center text-[#005345] text-2xl">Parabéns!</DialogTitle>
+          <DialogTitle className="text-center font-extrabold text-[#005345] text-2xl">Parabéns!</DialogTitle>
         </DialogHeader>
         <div className="flex flex-col items-center justify-center py-4">
           <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
@@ -46,7 +46,7 @@ export function CelebrationModal({ isOpen, onClose, previousLevel, nextLevel, me
               `Você superou o nível ${getLevelName(previousLevel)} e agora vai enfrentar questões mais desafiadoras.`}
           </p>
 
-          <Button onClick={onClose} className="rounded-xl w-[50%] bg-[#ff7100] hover:bg-[#ff8f36]">
+          <Button onClick={onClose} className="rounded-xl w-4/5 bg-[#ff7100] hover:bg-[#ff8f36] py-6">
             Continuar <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
         </div>

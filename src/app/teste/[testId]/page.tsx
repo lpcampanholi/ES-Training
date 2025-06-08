@@ -9,7 +9,6 @@ import { toast } from "sonner"
 import { formatTime } from "@/lib/utils"
 import parse from "html-react-parser"
 import { Badge } from "@/components/ui/badge"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { CelebrationModal } from "@/components/celebration-modal"
 import { TestService } from "@/services/test-service"
 import { getLevelColor, getLevelName, getSubjectColor } from "@/utils"
@@ -40,16 +39,19 @@ export default function TestePage({
   const [timeLeft, setTimeLeft] = useState(1200)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [currentBatch, setCurrentBatch] = useState<FrontendQuestion[]>([])
-  const [batchNumber, setBatchNumber] = useState(1)
   const [currentLevel, setCurrentLevel] = useState<Level>("fundamental")
-  const [message, setMessage] = useState<string | null>(null)
+  const [previousLevel, setPreviousLevel] = useState<Level>(currentLevel)
   const [answeredCount, setAnsweredCount] = useState(0)
-  const [currentAverage, setCurrentAverage] = useState(0)
 
-  const [celebrationModal, setCelebrationModal] = useState({
+  const [celebrationModal, setCelebrationModal] = useState<{
+    isOpen: boolean
+    previousLevel: Level
+    nextLevel: Level
+    message: string
+  }>({
     isOpen: false,
-    previousLevel: "fundamental" as Level,
-    nextLevel: "essencial" as Level,
+    previousLevel: "fundamental",
+    nextLevel: "essencial",
     message: "",
   })
 
@@ -104,6 +106,7 @@ export default function TestePage({
 
     if (currentQuestionIndex < currentBatch.length - 1) {
       setCurrentQuestionIndex((prev) => prev + 1)
+      window.scrollTo(0, 0)
     } else {
       handleSubmitAnswers()
     }
@@ -122,16 +125,22 @@ export default function TestePage({
 
       if (response.isComplete) {
         router.push(
-          `/resultado?score=${response.score?.toFixed(1).replace(".", ",") || "0,0"}&testId=${testId}&level=${response.recommendedLevel || currentLevel}`,
+          `/resultado?score=${response.score?.toFixed(1).replace(".", ",")|| "0,0"}&level=${response.recommendedLevel || currentLevel}`,
         )
       } else {
-        setCurrentBatch([])
-        setCurrentQuestionIndex(0)
-        setBatchNumber((prev) => prev + 1)
-        setAnsweredCount((prev) => prev + batchSize)
-
-        setCurrentBatch(response.questions || [])
-
+        // Se o nível atual mudou, resetamos o batch
+        if (response.currentLevel !== previousLevel) {
+          setCurrentBatch(response.questions || [])
+          setPreviousLevel(response.currentLevel || currentLevel)
+          setCurrentLevel(response.currentLevel || currentLevel)
+          setCurrentQuestionIndex(0)
+          setAnsweredCount((prev) => prev + batchSize)
+        } else {
+          setCurrentBatch((prevBatch) => [...prevBatch, ...(response.questions || [])])
+          setCurrentQuestionIndex(3)
+          window.scrollTo(0, 0)
+        }
+        
         if (response.currentLevel !== currentLevel && response.previousLevel) {
           setCelebrationModal({
             isOpen: true,
@@ -139,13 +148,10 @@ export default function TestePage({
             nextLevel: response.currentLevel || "essencial",
             message: response.message || "",
           })
-          setCurrentLevel(response.currentLevel || currentLevel)
-        } else if (response.message) {
-          setMessage(response.message)
         }
 
-        if (response.currentAverage) {
-          setCurrentAverage(response.currentAverage)
+        if (response.message && !response.message.startsWith("Você superou")) {
+          toast(response.message)
         }
       }
     } catch (error) {
@@ -207,13 +213,7 @@ export default function TestePage({
 
   return (
     <main className="flex flex-col items-center justify-center p-4 min-h-screen bg-[#005345]">
-      <div className="w-full max-w-4xl p-8 bg-white rounded-2xl shadow-sm">
-        {message && (
-          <Alert className="mb-6">
-            <AlertTitle>Informação</AlertTitle>
-            <AlertDescription>{message}</AlertDescription>
-          </Alert>
-        )}
+      <div className="w-full max-w-4xl p-6 sm:p-8 bg-white rounded-2xl shadow-sm">
 
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-2">
@@ -222,62 +222,64 @@ export default function TestePage({
             </div>
             <Badge className={getLevelColor(currentLevel)}>{getLevelName(currentLevel)}</Badge>
           </div>
-          <div className="flex items-center text-sm font-medium text-neutral-700 bg-neutral-100 px-4 py-2 rounded-full">
-            <Clock className="w-4 h-4 mr-2 text-blue-600" />
-            Tempo restante: {formatTime(timeLeft)}
+          <div className="flex items-center text-sm text-neutral-700 bg-neutral-100 border-1 px-3 w-22 rounded-full">
+            <Clock className="w-4 h-4 mr-2 text-[#ff7100]" />
+            {formatTime(timeLeft)}
           </div>
         </div>
 
         <div className="mb-6">
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm font-medium text-neutral-600">
-              Progresso do nível atual: {currentQuestionIndex + 1}/{currentBatch.length}
+              Progresso - {currentQuestionIndex + 1}/{currentBatch.length}
             </span>
             <span className="text-sm font-medium text-neutral-600">
-               (Questão {totalAnswered} total)
+               Questão feitas - {totalAnswered - 1}
             </span>
           </div>
           <Progress value={progress} className="h-2" />
         </div>
 
-        <h2 className="text-2xl font-extrabold text-[#005345] mb-6">Questão {totalAnswered}</h2>
+        <h2 className="text-2xl font-extrabold text-[#005345] mb-6">
+          Questão {currentQuestionIndex + 1}
+        </h2>
 
-        <div className="mb-8">
-          <div className="rich-text-content mb-6">{parse(currentQuestion.text)}</div>
+        <div className="rich-text-content mb-8">{parse(currentQuestion.text)}</div>
 
-          <div className="space-y-3">
-            {currentQuestion.options.map((option, index) => (
-              <button
-                key={option.id}
-                className={`w-full p-4 text-left rounded-xl transition-all ${
+        <div className="space-y-3 mb-8">
+          {currentQuestion.options.map((option, index) => (
+            <button
+              key={option.id}
+              className={`flex items-center w-full p-4 text-left rounded-xl transition-all ${
+                selectedAnswers[currentQuestion.id] === option.id
+                  ? "border border-neutral-500 bg-green-50 text-blue-700"
+                  : "border border-neutral-200 hover:border-neutral-300 hover:bg-slate-50"
+              }`}
+              onClick={() => handleSelectAnswer(currentQuestion.id, option.id)}
+            >
+              <span
+                className={`inline-flex items-center justify-center w-8 h-8 rounded-full mr-3 ${
                   selectedAnswers[currentQuestion.id] === option.id
-                    ? "border-2 border-blue-500 bg-blue-50 text-blue-700"
-                    : "border border-neutral-200 hover:border-neutral-300 hover:bg-slate-50"
+                    ? "bg-[#ff7100] text-white"
+                    : "bg-slate-100 text-neutral-700"
                 }`}
-                onClick={() => handleSelectAnswer(currentQuestion.id, option.id)}
               >
-                <span
-                  className={`inline-flex items-center justify-center w-8 h-8 rounded-full mr-3 ${
-                    selectedAnswers[currentQuestion.id] === option.id
-                      ? "bg-[#ff7100] text-white"
-                      : "bg-slate-100 text-neutral-700"
-                  }`}
-                >
-                  {String.fromCharCode(97 + index)}
-                </span>
-                <div className="inline-block rich-text-content">{parse(option.text)}</div>
-              </button>
-            ))}
-          </div>
+                {String.fromCharCode(97 + index)}
+              </span>
+              <div className="rich-text-content flex-1 flex items-center">
+                {parse(option.text)}
+              </div>
+            </button>
+          ))}
         </div>
 
-        <div className="flex justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:justify-between">
           <Button
             variant="outline"
             onClick={() =>
               handleShowConfirmFinish("Finalizar teste", "Tem certeza de que deseja finalizar o teste agora?")
             }
-            className="rounded-xl"
+            className="rounded-xl py-6"
             disabled={isSubmitting}
           >
             <AlertCircle className="w-4 h-4 mr-2" />
@@ -285,7 +287,7 @@ export default function TestePage({
           </Button>
           <Button
             onClick={handleNextQuestion}
-            className="rounded-xl bg-[#ff7100] hover:bg-[#ff8f36]"
+            className="rounded-xl bg-[#ff7100] hover:bg-[#ff8f36] py-6"
             disabled={isSubmitting}
           >
             {isSubmitting
@@ -300,7 +302,10 @@ export default function TestePage({
 
       <CelebrationModal
         isOpen={celebrationModal.isOpen}
-        onClose={() => setCelebrationModal((prev) => ({ ...prev, isOpen: false }))}
+        onClose={() => {
+          setCelebrationModal((prev) => ({ ...prev, isOpen: false }))
+          window.scrollTo(0, 0)
+        }}
         previousLevel={celebrationModal.previousLevel}
         nextLevel={celebrationModal.nextLevel}
         message={celebrationModal.message}

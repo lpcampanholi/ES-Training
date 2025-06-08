@@ -154,7 +154,7 @@ async function main() {
   console.log(`👥 ${users.length} usuários normais criados`)
 
   const subjects: Subject[] = ["excel", "powerbi", "sql", "python"]
-  const levels: Level[] = ["fundamental", "essencial", "avancado", "profissional"]
+  const levels: Level[] = ["fundamental", "essencial", "avancado"]
 
   let questionCount = 0
 

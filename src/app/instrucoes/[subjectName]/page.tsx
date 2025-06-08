@@ -3,7 +3,7 @@
 import { useState, useEffect, use } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, ArrowRight, CheckCircle, Clock, Brain, Award } from "lucide-react"
+import { ArrowLeft, ArrowRight, CheckCircle, Clock, Brain, Award, Loader2 } from "lucide-react"
 import Link from "next/link"
 import { toast } from "sonner"
 import { TestService } from "@/services/test-service"
@@ -61,24 +61,24 @@ export default function InstrucoesPage({
 
   if (!subject) {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-[#005345]">
-        <div className="w-full max-w-4xl p-8 bg-white rounded-2xl shadow-sm">
-          <div className="text-center py-10">Carregando...</div>
-        </div>
-      </main>
+    <div className="text-center p-4 min-h-screen bg-[#005345]">
+      <div className="flex justify-center py-10">
+        <Loader2 className="w-7 h-7 animate-spin text-white" />
+      </div>
+    </div>
     )
   }
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-[#005345]">
       <div className="w-full max-w-4xl p-8 bg-white rounded-2xl shadow-sm">
-        <Link
+        {/* <Link
           href={`/registro/${subjectName}`}
           className="inline-flex items-center text-[#005345] hover:text-[#3e9b8c] mb-6 transition-colors"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Voltar
-        </Link>
+        </Link> */}
 
         <div className="flex flex-col items-center justify-center py-6">
           <div className="mb-8 text-center">
@@ -90,59 +90,57 @@ export default function InstrucoesPage({
             </p>
           </div>
 
-          <div className="mb-8 p-8">
-              <div className="space-y-8">
-                <div className="flex items-start gap-3">
-                  <div className="bg-blue-100 p-2 rounded-full">
-                    <Brain className="h-5 w-5 text-blue-600" />
-                  </div>
-                  <div>
-                    <p className="font-bold text-[#005345]">Teste adaptativo</p>
-                    <p className="text-neutral-600">
-                      O teste se adapta ao seu nível de conhecimento, ficando mais difícil conforme você
-                      vai passando de nível.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <div className="bg-green-100 p-2 rounded-full">
-                    <Award className="h-5 w-5 text-green-600" />
-                  </div>
-                  <div>
-                    <p className="font-bold text-[#005345]">Níveis progressivos</p>
-                    <p className="text-neutral-600">
-                      O teste possui 4 níveis: Fundamental, Essencial, Avançado e Profissional. Você avança de nível ao
-                      atingir média 8.0 ou superior.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <div className="bg-amber-100 p-2 rounded-full">
-                    <CheckCircle className="h-5 w-5 text-amber-600" />
-                  </div>
-                  <div>
-                    <p className="font-bold text-[#005345]">Responda com atenção</p>
-                    <p className="text-neutral-600">
-                      Cada questão possui 4 alternativas com diferentes valores. Escolha a que melhor responde à
-                      pergunta.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3">
-                  <div className="bg-purple-100 p-2 rounded-full">
-                    <Clock className="h-5 w-5 text-purple-600" />
-                  </div>
-                  <div>
-                    <p className="font-bold text-[#005345]">Tempo limitado</p>
-                    <p className="text-neutral-600">
-                      Você terá 20 minutos para completar o teste. Fique atento ao contador no topo da tela.
-                    </p>
-                  </div>
-                </div>
+          <div className="space-y-8 mb-10">
+            <div className="flex items-center gap-3 flex-col sm:flex-row">
+              <div className="bg-blue-100 p-2 rounded-full">
+                <Brain className="h-5 w-5 text-blue-600" />
               </div>
+              <div className="mt-2 sm:mt-0 text-center sm:text-left">
+                <p className="font-bold text-lg sm:text-base text-[#005345]">Teste adaptativo</p>
+                <p className="text-neutral-600">
+                  O teste se adapta ao seu nível de conhecimento, ficando mais difícil conforme você
+                  vai passando de nível.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 flex-col sm:flex-row">
+              <div className="bg-green-100 p-2 rounded-full">
+                <Award className="h-5 w-5 text-green-600" />
+              </div>
+              <div className="mt-2 sm:mt-0 text-center sm:text-left">
+                <p className="font-bold text-lg sm:text-base text-[#005345]">Níveis progressivos</p>
+                <p className="text-neutral-600">
+                  O teste possui 3 níveis: Fundamental, Essencial e Avançado. Você avança de nível ao
+                  atingir média 8.0 ou superior.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 flex-col sm:flex-row">
+              <div className="bg-amber-100 p-2 rounded-full">
+                <CheckCircle className="h-5 w-5 text-amber-600" />
+              </div>
+              <div className="mt-2 sm:mt-0 text-center sm:text-left">
+                <p className="font-bold text-lg sm:text-base text-[#005345]">Responda com atenção</p>
+                <p className="text-neutral-600">
+                  Cada questão possui 4 alternativas com diferentes valores. Escolha a que melhor responde à
+                  pergunta.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 flex-col sm:flex-row">
+              <div className="bg-purple-100 p-2 rounded-full">
+                <Clock className="h-5 w-5 text-purple-600" />
+              </div>
+              <div className="mt-2 sm:mt-0 text-center sm:text-left">
+                <p className="font-bold text-lg sm:text-base text-[#005345]">Tempo limitado</p>
+                <p className="text-neutral-600">
+                  Você terá 20 minutos para completar o teste. Fique atento ao contador no topo da tela.
+                </p>
+              </div>
+            </div>
           </div>
 
           <div className="text-center mb-8">
@@ -152,7 +150,7 @@ export default function InstrucoesPage({
 
           <Button
             onClick={handleStartTest}
-            className="py-6 px-8 w-[200px] rounded-xl bg-[#ff7100] hover:bg-[#ff8f36] text-white font-medium transition-colors"
+            className="py-6 px-8 w-full sm:w-[200px] rounded-xl bg-[#ff7100] hover:bg-[#ff8f36] text-white font-medium transition-colors"
             disabled={isLoading}
           >
             {isLoading ? (

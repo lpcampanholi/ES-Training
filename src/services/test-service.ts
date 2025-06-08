@@ -1,5 +1,23 @@
 import { TestData } from "@/app/teste/[testId]/page"
 import { GenerateTestDTO, SubmitAnswersDTO } from "@/types/dtos"
+import { Level, Option, Question } from "@prisma/client"
+
+export interface SubmitAnswersResponse {
+  testId: string
+  isComplete: boolean
+  score?: number
+  recommendedLevel?: Level
+  currentLevel: Level
+  previousLevel?: Level
+  passedLevel?: boolean
+  message?: string
+  currentAverage?: number
+  questions?: Array<
+    Question & {
+      options: Option[]
+    }
+  >
+}
 
 export class TestService {
   static async generateTest(data: GenerateTestDTO) {
@@ -19,7 +37,7 @@ export class TestService {
     return response.json()
   }
 
-  static async submitAnswers(data: SubmitAnswersDTO) {
+  static async submitAnswers(data: SubmitAnswersDTO): Promise<SubmitAnswersResponse> {
     const response = await fetch("/api/submit-answers", {
       method: "POST",
       headers: {

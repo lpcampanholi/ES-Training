@@ -70,13 +70,11 @@ export default function RegistroPage({
 
   if (!subject) {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-[#005345]">
-        <div className="w-full max-w-4xl p-8 bg-white rounded-2xl shadow-sm">
-            <div className="text-center py-10">
-              <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
-            </div>
+      <div className="text-center p-4 min-h-screen bg-[#005345]">
+        <div className="flex justify-center py-10">
+          <Loader2 className="w-7 h-7 animate-spin text-white" />
         </div>
-      </main>
+      </div>
     )
   }
 
@@ -165,7 +163,7 @@ export default function RegistroPage({
 
             <Button
               type="submit"
-              className="w-[200px] py-6 rounded-xl bg-[#ff7100] hover:bg-[#ff8f36] text-white font-medium mt-6 mx-auto transition-colors"
+              className="w-full sm:w-[200px] py-6 rounded-xl bg-[#ff7100] hover:bg-[#ff8f36] text-white font-medium mt-6 mx-auto transition-colors"
               disabled={isLoading}
             >
               {isLoading ? (

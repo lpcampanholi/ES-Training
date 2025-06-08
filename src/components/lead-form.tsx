@@ -123,7 +123,6 @@ export function LeadForm({
               <SelectItem value="fundamental">Fundamental</SelectItem>
               <SelectItem value="essencial">Essencial</SelectItem>
               <SelectItem value="avancado">Avançado</SelectItem>
-              <SelectItem value="profissional">Profissional</SelectItem>
             </SelectContent>
           </Select>
         </div>

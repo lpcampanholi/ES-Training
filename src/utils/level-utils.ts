@@ -6,8 +6,6 @@ export function getNextLevel(currentLevel: Level): Level {
       return "essencial"
     case "essencial":
       return "avancado"
-    case "avancado":
-      return "profissional"
     default:
       return currentLevel
   }
@@ -22,8 +20,6 @@ export function getLevelName(level: Level): string {
       return "Essencial"
     case "avancado":
       return "Avançado"
-    case "profissional":
-      return "Profissional"
     default:
       return level
   }
@@ -36,8 +32,6 @@ export function getLevelColor(level: Level): string {
     case "essencial":
       return "bg-blue-100 text-blue-800"
     case "avancado":
-      return "bg-purple-100 text-purple-800"
-    case "profissional":
       return "bg-amber-100 text-amber-800"
     default:
       return "bg-gray-100 text-gray-800"
@@ -52,8 +46,6 @@ export function getLevelDescription(level: Level): string {
       return "Neste nível, você aprofundará seus conhecimentos e aprenderá técnicas mais avançadas."
     case "avancado":
       return "Neste nível, você dominará técnicas avançadas e resolverá problemas complexos."
-    case "profissional":
-      return "Neste nível, você se tornará um especialista com habilidades de nível profissional."
     default:
       return "Aprenda mais sobre este nível na Formação SmartES."
   }

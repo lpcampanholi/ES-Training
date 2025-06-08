@@ -125,7 +125,6 @@ export default function QuestionForm({
               <SelectItem value={Level.fundamental}>Fundamental</SelectItem>
               <SelectItem value={Level.essencial}>Essencial</SelectItem>
               <SelectItem value={Level.avancado}>Avançado</SelectItem>
-              <SelectItem value={Level.profissional}>Profissional</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -154,7 +153,7 @@ export default function QuestionForm({
                 placeholder={`Alternativa ${index + 1}`}
               />
             </div>
-            <div className="col-span-3">
+            <div className="col-span-3 w-full">
               <Select
                 value={option.value.toString()}
                 onValueChange={(value) => handleOptionValueChange(index, Number.parseFloat(value))}

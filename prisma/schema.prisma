@@ -114,7 +114,6 @@ enum Level {
   fundamental
   essencial
   avancado
-  profissional
 }
 
 enum LeadStage {

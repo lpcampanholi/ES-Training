@@ -3,7 +3,7 @@
 import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { CheckCircle, Home, Award, ArrowRight } from "lucide-react"
+import { CheckCircle, Home, Award } from "lucide-react"
 import confetti from "canvas-confetti"
 import { useEffect } from "react"
 import { Badge } from "@/components/ui/badge"
@@ -13,7 +13,6 @@ import { Level } from "@/types/prisma"
 export default function ResultadoPage() {
   const searchParams = useSearchParams()
   const score = searchParams.get("score") || "0,0"
-  const testId = searchParams.get("testId")
   const recommendedLevel = (searchParams.get("level") || "fundamental") as Level
   const scoreNum = Number.parseFloat(score.replace(",", "."))
 
@@ -72,13 +71,13 @@ export default function ResultadoPage() {
 
         <div className="flex flex-wrap gap-4 justify-center mt-6">
           <Link href="/">
-            <Button variant="outline" className="rounded-xl px-6 py-6 ">
+            <Button variant="outline" className="rounded-xl px-6 py-6 w-50">
               <Home className="w-5" />
               Voltar para o início
             </Button>
           </Link>
           <Link href="/disciplinas">
-            <Button variant="outline" className="rounded-xl px-6 py-6 ">
+            <Button variant="outline" className="rounded-xl px-6 py-6 w-50 ">
               <Award className="w-5" />
               Fazer outro teste
             </Button>
