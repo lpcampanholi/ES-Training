@@ -61,7 +61,7 @@ export default function InstrucoesPage({
 
   if (!subject) {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-gradient-to-b from-slate-50 to-slate-100">
+      <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-[#005345]">
         <div className="w-full max-w-4xl p-8 bg-white rounded-2xl shadow-sm">
           <div className="text-center py-10">Carregando...</div>
         </div>
@@ -70,11 +70,11 @@ export default function InstrucoesPage({
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-gradient-to-b from-slate-50 to-slate-100">
+    <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-[#005345]">
       <div className="w-full max-w-4xl p-8 bg-white rounded-2xl shadow-sm">
         <Link
           href={`/registro/${subjectName}`}
-          className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-6 transition-colors"
+          className="inline-flex items-center text-[#005345] hover:text-[#3e9b8c] mb-6 transition-colors"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Voltar
@@ -82,9 +82,9 @@ export default function InstrucoesPage({
 
         <div className="flex flex-col items-center justify-center py-6">
           <div className="mb-8 text-center">
-            <h2 className="text-3xl font-bold text-slate-800 mb-2">Instruções do Teste</h2>
-            <div className="w-20 h-1 bg-blue-500 mx-auto mb-4 rounded-full"></div>
-            <p className="text-slate-600">
+            <h2 className="text-3xl font-extrabold text-[#005345] mb-2">Instruções</h2>
+            <div className="w-45 h-1 bg-[#ff7100] mx-auto mb-4 rounded-full"></div>
+            <p className="text-neutral-600">
               Olá, <span className="font-semibold">{nome}</span>! Veja como funciona o teste de{" "}
               <span className={`text-${subject.color} font-semibold`}>{subject.name}:</span>
             </p>
@@ -97,8 +97,8 @@ export default function InstrucoesPage({
                     <Brain className="h-5 w-5 text-blue-600" />
                   </div>
                   <div>
-                    <p className="font-semibold">Teste adaptativo</p>
-                    <p className="text-slate-600">
+                    <p className="font-bold text-[#005345]">Teste adaptativo</p>
+                    <p className="text-neutral-600">
                       O teste se adapta ao seu nível de conhecimento, ficando mais difícil conforme você
                       vai passando de nível.
                     </p>
@@ -110,8 +110,8 @@ export default function InstrucoesPage({
                     <Award className="h-5 w-5 text-green-600" />
                   </div>
                   <div>
-                    <p className="font-semibold">Níveis progressivos</p>
-                    <p className="text-slate-600">
+                    <p className="font-bold text-[#005345]">Níveis progressivos</p>
+                    <p className="text-neutral-600">
                       O teste possui 4 níveis: Fundamental, Essencial, Avançado e Profissional. Você avança de nível ao
                       atingir média 8.0 ou superior.
                     </p>
@@ -123,8 +123,8 @@ export default function InstrucoesPage({
                     <CheckCircle className="h-5 w-5 text-amber-600" />
                   </div>
                   <div>
-                    <p className="font-semibold">Responda com atenção</p>
-                    <p className="text-slate-600">
+                    <p className="font-bold text-[#005345]">Responda com atenção</p>
+                    <p className="text-neutral-600">
                       Cada questão possui 4 alternativas com diferentes valores. Escolha a que melhor responde à
                       pergunta.
                     </p>
@@ -136,8 +136,8 @@ export default function InstrucoesPage({
                     <Clock className="h-5 w-5 text-purple-600" />
                   </div>
                   <div>
-                    <p className="font-semibold">Tempo limitado</p>
-                    <p className="text-slate-600">
+                    <p className="font-bold text-[#005345]">Tempo limitado</p>
+                    <p className="text-neutral-600">
                       Você terá 20 minutos para completar o teste. Fique atento ao contador no topo da tela.
                     </p>
                   </div>
@@ -146,13 +146,13 @@ export default function InstrucoesPage({
           </div>
 
           <div className="text-center mb-8">
-            <h3 className="text-xl font-bold mb-2">Pronto para começar?</h3>
-            <p className="text-slate-600">Clique no botão abaixo para iniciar seu teste de nivelamento.</p>
+            <h3 className="text-xl font-extrabold text-[#005345] mb-2">Pronto para começar?</h3>
+            <p className="text-neutral-600">Clique no botão abaixo para iniciar seu teste de nivelamento.</p>
           </div>
 
           <Button
             onClick={handleStartTest}
-            className="py-6 px-8 w-[200px] rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors"
+            className="py-6 px-8 w-[200px] rounded-xl bg-[#ff7100] hover:bg-[#ff8f36] text-white font-medium transition-colors"
             disabled={isLoading}
           >
             {isLoading ? (

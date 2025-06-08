@@ -15,7 +15,13 @@ import { TestService } from "@/services/test-service"
 import { getLevelColor, getLevelName, getSubjectColor } from "@/utils"
 import { Level } from "@prisma/client"
 import { useModalConfirm } from "@/contexts/modal-confirm-context"
-import { FrontendQuestion, TestData } from "@/types"
+import { FrontendQuestion } from "@/types"
+
+export interface TestData {
+  testId: string
+  questions: FrontendQuestion[]
+  currentLevel: Level
+}
 
 export default function TestePage({
   params,
@@ -183,9 +189,9 @@ export default function TestePage({
 
   if (isLoading) {
     return (
-    <div className="text-center py-10">
+    <div className="text-center p-4 min-h-screen bg-[#005345]">
       <div className="flex justify-center py-10">
-        <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
+        <Loader2 className="w-7 h-7 animate-spin text-white" />
       </div>
     </div>
     )
@@ -200,7 +206,7 @@ export default function TestePage({
   const totalAnswered = answeredCount + currentQuestionIndex + 1
 
   return (
-    <main className="flex flex-col items-center justify-center p-4 min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
+    <main className="flex flex-col items-center justify-center p-4 min-h-screen bg-[#005345]">
       <div className="w-full max-w-4xl p-8 bg-white rounded-2xl shadow-sm">
         {message && (
           <Alert className="mb-6">
@@ -211,12 +217,12 @@ export default function TestePage({
 
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-2">
-            <div className={`${getSubjectColor(currentQuestion.subject)} text-sm font-medium px-3 rounded-full border-1 border-slate-200`}>
+            <div className={`${getSubjectColor(currentQuestion.subject)} text-sm font-medium px-3 rounded-full border-1 border-neutral-200`}>
               {currentQuestion.subject === "powerbi" ? "Power BI" : currentQuestion.subject.toUpperCase()}
             </div>
             <Badge className={getLevelColor(currentLevel)}>{getLevelName(currentLevel)}</Badge>
           </div>
-          <div className="flex items-center text-sm font-medium text-slate-700 bg-slate-100 px-4 py-2 rounded-full">
+          <div className="flex items-center text-sm font-medium text-neutral-700 bg-neutral-100 px-4 py-2 rounded-full">
             <Clock className="w-4 h-4 mr-2 text-blue-600" />
             Tempo restante: {formatTime(timeLeft)}
           </div>
@@ -224,17 +230,17 @@ export default function TestePage({
 
         <div className="mb-6">
           <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-medium text-slate-600">
+            <span className="text-sm font-medium text-neutral-600">
               Progresso do nível atual: {currentQuestionIndex + 1}/{currentBatch.length}
             </span>
-            <span className="text-sm font-medium text-slate-600">
+            <span className="text-sm font-medium text-neutral-600">
                (Questão {totalAnswered} total)
             </span>
           </div>
           <Progress value={progress} className="h-2" />
         </div>
 
-        <h2 className="text-2xl font-bold text-slate-800 mb-6">Questão {totalAnswered}</h2>
+        <h2 className="text-2xl font-extrabold text-[#005345] mb-6">Questão {totalAnswered}</h2>
 
         <div className="mb-8">
           <div className="rich-text-content mb-6">{parse(currentQuestion.text)}</div>
@@ -246,15 +252,15 @@ export default function TestePage({
                 className={`w-full p-4 text-left rounded-xl transition-all ${
                   selectedAnswers[currentQuestion.id] === option.id
                     ? "border-2 border-blue-500 bg-blue-50 text-blue-700"
-                    : "border border-slate-200 hover:border-slate-300 hover:bg-slate-50"
+                    : "border border-neutral-200 hover:border-neutral-300 hover:bg-slate-50"
                 }`}
                 onClick={() => handleSelectAnswer(currentQuestion.id, option.id)}
               >
                 <span
                   className={`inline-flex items-center justify-center w-8 h-8 rounded-full mr-3 ${
                     selectedAnswers[currentQuestion.id] === option.id
-                      ? "bg-blue-500 text-white"
-                      : "bg-slate-100 text-slate-700"
+                      ? "bg-[#ff7100] text-white"
+                      : "bg-slate-100 text-neutral-700"
                   }`}
                 >
                   {String.fromCharCode(97 + index)}
@@ -279,7 +285,7 @@ export default function TestePage({
           </Button>
           <Button
             onClick={handleNextQuestion}
-            className="rounded-xl bg-blue-600 hover:bg-blue-700"
+            className="rounded-xl bg-[#ff7100] hover:bg-[#ff8f36]"
             disabled={isSubmitting}
           >
             {isSubmitting

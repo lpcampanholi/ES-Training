@@ -70,7 +70,7 @@ export default function RegistroPage({
 
   if (!subject) {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-gradient-to-b from-slate-50 to-slate-100">
+      <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-[#005345]">
         <div className="w-full max-w-4xl p-8 bg-white rounded-2xl shadow-sm">
             <div className="text-center py-10">
               <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
@@ -81,11 +81,11 @@ export default function RegistroPage({
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-gradient-to-b from-slate-50 to-slate-100">
+    <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-[#005345]">
       <div className="w-full max-w-4xl p-8 bg-white rounded-2xl shadow-sm">
         <Link
           href="/disciplinas"
-          className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-6 transition-colors"
+          className="inline-flex items-center text-[#005345] hover:text-[#3e9b8c] mb-6 transition-colors"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Voltar
@@ -93,16 +93,16 @@ export default function RegistroPage({
 
         <div className="flex flex-col items-center justify-center py-6">
           <div className="mb-10 text-center">
-            <h2 className="text-2xl font-bold text-slate-800 mb-2">Seja bem-vindo(a) ao nosso teste de nivelamento!</h2>
-            <div className="w-20 h-1 bg-blue-500 mx-auto mb-4 rounded-full"></div>
-            <p className="text-slate-600">
-              Teste de <span className={`text-${subject.color} font-semibold`}>{subject.name}</span>
+            <h2 className="text-3xl font-extrabold text-[#005345] mb-2">Olá!</h2>
+            <div className="w-40 h-1 bg-[#ff7100] mx-auto mb-4 rounded-full"></div>
+            <p className="text-neutral-600">
+              Seja bem-vindo(a) ao nosso teste de <span className={`text-${subject.color} font-semibold`}>{subject.name}!</span>
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="w-full max-w-md space-y-5">
+          <form onSubmit={handleSubmit} className="w-full max-w-md space-y-5 flex flex-col">
             <div className="space-y-2">
-              <Label htmlFor="name" className="text-slate-700">
+              <Label htmlFor="name" className="text-neutral-700">
                 Nome
               </Label>
               <div className="relative">
@@ -122,7 +122,7 @@ export default function RegistroPage({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-slate-700">
+              <Label htmlFor="email" className="text-neutral-700">
                 E-mail
               </Label>
               <div className="relative">
@@ -143,7 +143,7 @@ export default function RegistroPage({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="phone" className="text-slate-700">
+              <Label htmlFor="phone" className="text-neutral-700">
                 Telefone
               </Label>
               <div className="relative">
@@ -165,7 +165,7 @@ export default function RegistroPage({
 
             <Button
               type="submit"
-              className="w-full py-6 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium mt-6 transition-colors"
+              className="w-[200px] py-6 rounded-xl bg-[#ff7100] hover:bg-[#ff8f36] text-white font-medium mt-6 mx-auto transition-colors"
               disabled={isLoading}
             >
               {isLoading ? (

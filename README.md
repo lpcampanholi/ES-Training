@@ -32,6 +32,9 @@ _________________
 27/05 - 4h  
 30/05 - 5h
 31/05 - 7h
+01/06 - 2h
+05/06 - 2h
+07/06 - 2h de manhã. à tarde: início às 15:40
 
 ## Níveis
 
@@ -73,24 +76,6 @@ Popular o banco:
 npx tsx .\src\scripts\seed-data.ts 
 ```
 
-## Valor das questões
-
-Totalmente errada: 0  
-Parcialmente certa: 40  
-Quase certa: 70  
-Totalmente certa: 100  
-
-## O que fazer
-
-- Corrigir modal das questões
-- Verificar CRUD de questões:
- - Criar
- - Listagem
- - Editar
- - Deletar
- - Fechar modal da questão ao fechar
-- Corrigir lógica do teste
-
 # Regra do teste:
 
 - Níveis do teste (nesta ordem): fundamental, essencial, avançado e profissional.
@@ -102,22 +87,18 @@ Totalmente certa: 100
 - Após fazer essas três primeiras questões, há uma avaliação:
 
 	- Se a média atual for >= 8.0, o usuário já avança para o próximo nível.
-	- Se a média atual for < 8.0, verifica-se se é possível atingir média 8.0 tirando 10 na próxima questão.
-	- Se não for possível atingir média 8.0, mesmo tirando 10.0 na próxima questão, o teste é encerrado e o usuário permanece no nível atual.
-	- Se for possível atingir média 8.0, o usuário faz mais uma pergunta deste nível.
+	- Se a média atual for < 8.0, verifica-se se é possível atingir média 8.0 tirando 10 nas duas próximas questões.
+	- Se não for possível atingir média 8.0, mesmo tirando 10.0 nas duas próximas questões, o teste é encerrado e o usuário permanece no nível atual.
+	- Se for possível atingir média 8.0, o usuário faz mais duas perguntas deste nível.
 
-Então o usuário faz a quarta questão do nível. Então deve ser feito a avaliação novamente.
-
-Então o usuário faz a quinta e última questão do nível.
+Então o usuário faz mais duas questões do nível.
 
 	- Se atingiu a média (>= 8.0), ele continua o teste e avança para o próximo nível.
 	- Se não atingiu a média (< 8.0), o teste é encerrado e o usuário fica no nível atual.
 
-Recomendação Final:
-
 - Ao final do teste, o sistema recomenda o nível adequado para o usuário com base em seu desempenho.
 
-- Sobre as alternativas (options):  
+- Sobre as alternativas (options) de cada questão, elas podem ter os valores:  
 
 	Cada questão possui 4 opções, com valores:
 	Totalmente correta -10
@@ -125,145 +106,20 @@ Recomendação Final:
 	Parcialmente correta -4
 	Totalmente errada	- 0
 
-É recomendado que cada questão deve ter exatamente uma opção de cada tipo (10, 7, 4, 0)
+- É recomendado que cada questão deve ter exatamente uma opção de cada tipo (10, 7, 4, 0)
 
 # Refinamento
-- Adicionar loading no botão da tela de registro
-- Deixar tela de resultado mais bonita
-- Corrigir o badge do nível do teste na tela de teste
 - Mudar regra de que é permitido apenas um e-mail por teste
-- Melhorar a Home, deixar mais simplificada
 - Corrigir barra de progresso da tela de teste
 - No CRUD de questões, ao invés de acionar o confirm do browser, acionar meu modal de confirmação
 - Ao clicar em algum select, não desativar a barra de rolagem da página (se possível, pesquisar, senão deixa)
-- Corrigir as cores dos trequinhos e arrumar os utils
-- Fechar o modal de edição de Questões ***** OK
 - Corrigir DTOs das questões
 - Tamanho do Quase certa (7.0)
-- campo telefone na tela de registros deve aceitar apenas números
-
-REGRA Se (média + 10) / 2 >= 8, o usuário pode continuar.
-
-# ✅ Testes Manuais - Lógica do Teste de Nivelamento
-> Alternativas possíveis: **0, 4, 7, 10**
 
 ---
 
-🧪 **Caminho 1: Avança direto após 3 questões**  
-Notas: 10, 10, 7 → Média = 9  
+# Paleta de Cores
+Verde escuro - #005345     -- hover: #3e9b8c
+Laranja - #ff7100          -- hover: #ff8f36
+Cinza - text-neutral-600
 
-✅ Resultado: Avança de nível
-
----
-
-🧪 **Caminho 2: Faz 3, mas (média + 10)/2 < 8 → Finaliza**  
-Notas: 4, 4, 4 → Média = 4  
-
-🔍 Verificação: (4 + 10) / 2 = 7 < 8 ❌  
-
-❌ Resultado: Finaliza teste no nível atual
-
----
-
-🧪 **Caminho 3: Faz 3, (média + 10)/2 >= 8 → Faz 4ª questão, então Finaliza**  
-Notas: 7, 7, 7 → Média = 7  
-
-🔍 Verificação: (7 + 10)/2 = 8.5 ✅  
-
-➡️ 4ª questão: 4  
-Nova média: (7+7+7+4)/4 = 6.25  
-
-🔍 Verificação: (6.25 + 10)/2 = 8.125 ✅ → Faz 5ª  
-
-5ª questão: 4  
-Média final: (7+7+7+4+4)/5 = 5.8 ❌  
-
-❌ Resultado: Finaliza sem avançar
-
----
-
-🧪 **Caminho 4: Faz 3, (média + 10)/2 >= 8 → Faz 4ª, depois Avança**  
-Notas: 7, 10, 7 → Média = 8  
-
-✅ Resultado: Avança direto
-
----
-
-🧪 **Caminho 5: Finaliza com nota exata (8.0)**  
-Notas: 10, 4, 10 → Média = 8  
-
-✅ Resultado: Avança direto
-
----
-
-🧪 **Caminho 6: Último nível (profissional)**  
-Notas: 10, 10, 10 → Média = 10 ✅  
-
-📌 Próximo nível não existe  
-
-✅ Resultado: Teste finalizado com recomendação de nível profissional
-
----
-
-🧪 **Caminho 7: Erra tudo**  
-Notas: 0, 0, 0 → Média = 0  
-
-🔍 Verificação: (0 + 10)/2 = 5 ❌  
-
-❌ Resultado: Finaliza teste
-
----
-
-🧪 **Caminho 8: Média 7 → faz 4ª, continua, mas não atinge**  
-Notas: 10, 7, 4 → Média = 7  
-
-🔍 Verificação: (7 + 10)/2 = 8.5 ✅ → faz 4ª  
-
-4ª questão: 4 → média = (10+7+4+4)/4 = 6.25  
-
-🔍 Verificação: (6.25 + 10)/2 = 8.125 ✅ → faz 5ª  
-
-5ª questão: 4 → final: (10+7+4+4+4)/5 = 5.8 ❌  
-
-❌ Resultado: Finaliza sem avançar
-
----
-
-🧪 **Caminho 9: Média baixa, mas impossível atingir média**  
-Notas: 4, 4, 4 → Média = 4  
-
-🔍 Verificação: (4 + 10) / 2 = 7 ❌  
-
-❌ Resultado: Finaliza
-
----
-
-10, 10, 10
-Passou, média 10
-
-10, 10, 7
-Passou, média 9
-
-10, 7, 7
-Passou, média 8
-
-10, 7 e 4
-Mèdia: 21 / 3 = 7
-Manda a quarta questão?
-31 / 4 = 7,75 -> Teste não continua
-
-
-🧪 **Caminho 3: Faz 3, (média + 10)/2 >= 8 → Faz 4ª questão, então Finaliza**  
-Notas: 7, 7, 7 → Média = 7  
-
-🔍 Verificação: (7 + 10)/2 = 8.5 ✅  
-
-➡️ 4ª questão: 4  
-Nova média: (7+7+7+4)/4 = 6.25  
-
-🔍 Verificação: (6.25 + 10)/2 = 8.125 ✅ → Faz 5ª  
-
-5ª questão: 4  
-Média final: (7+7+7+4+4)/5 = 5.8 ❌  
-
-❌ Resultado: Finaliza sem avançar

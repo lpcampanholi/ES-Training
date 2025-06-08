@@ -32,21 +32,21 @@ export function CelebrationModal({ isOpen, onClose, previousLevel, nextLevel, me
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-center text-2xl">Parabéns!</DialogTitle>
+          <DialogTitle className="text-center text-[#005345] text-2xl">Parabéns!</DialogTitle>
         </DialogHeader>
         <div className="flex flex-col items-center justify-center py-4">
           <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
             <Award className="h-12 w-12 text-green-600" />
           </div>
 
-          <h3 className="text-xl font-bold text-center mb-4">Você passou para o nível {getLevelName(nextLevel)}!</h3>
+          <h3 className="text-xl font-bold text-[#005345] text-center mb-4">Você passou para o nível {getLevelName(nextLevel)}!</h3>
 
           <p className="text-center text-slate-600 mb-6">
             {message ||
               `Você superou o nível ${getLevelName(previousLevel)} e agora vai enfrentar questões mais desafiadoras.`}
           </p>
 
-          <Button onClick={onClose} className="w-full">
+          <Button onClick={onClose} className="rounded-xl w-[50%] bg-[#ff7100] hover:bg-[#ff8f36]">
             Continuar <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
         </div>

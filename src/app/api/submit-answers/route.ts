@@ -7,7 +7,7 @@ import { getNextLevel } from "@/utils";
 const AVERAGE = 8.0;
 
 function canReachAverage(currentSum: number, currentCount: number): boolean {
-  return (currentSum + 10) / (currentCount + 1) >= AVERAGE;
+  return (currentSum + 20) / (currentCount + 2) >= AVERAGE;
 }
 
 function getRecommendedLevel(average: number, currentLevel: Level): Level {
@@ -53,9 +53,9 @@ export async function POST(request: NextRequest) {
         testId,
         questionId: { in: Object.keys(answers) },
       },
-    })
+    });
 
-    const existingQuestionIds = new Set(existingAnswers.map(a => a.questionId))
+    const existingQuestionIds = new Set(existingAnswers.map(a => a.questionId));
 
     const newAnswers = Object.entries(answers)
       .filter(([questionId]) => !existingQuestionIds.has(questionId))
@@ -63,10 +63,10 @@ export async function POST(request: NextRequest) {
         testId,
         questionId,
         optionId,
-      }))
+      }));
 
     if (newAnswers.length > 0) {
-      await prisma.answer.createMany({ data: newAnswers })
+      await prisma.answer.createMany({ data: newAnswers });
     }
 
     const allAnswers = await prisma.answer.findMany({
@@ -79,10 +79,8 @@ export async function POST(request: NextRequest) {
     const totalScore = currentLevelAnswers.reduce((sum, a) => sum + (a.option?.value || 0), 0);
     const currentAverage = answeredCount > 0 ? totalScore / answeredCount : 0;
 
-    if (isComplete || answeredCount >= 5) {
-      console.log("entrou aqui------------------------------------------------------------------------------------------------");
-      console.log("1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111");
-      console.log("answeredCount", answeredCount);
+    // Finalizar o teste
+    if (isComplete || answeredCount > 5) {
       const recommendedLevel = getRecommendedLevel(currentAverage, test.level);
 
       await prisma.test.update({
@@ -102,11 +100,10 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    if (answeredCount === 3 || answeredCount === 4) {
-      console.log("entrou aqui------------------------------------------------------------------------------------------------")
-      console.log("22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222");
-      console.log("answeredCount", answeredCount);
+    // Lógica para fazer mais 2 questões
+    if (answeredCount === 3 || answeredCount === 5) {
       if (currentAverage >= AVERAGE) {
+        // passa direto de nível
         const nextLevel = getNextLevel(test.level);
 
         if (nextLevel === test.level) {
@@ -175,7 +172,8 @@ export async function POST(request: NextRequest) {
           message: `Você superou o nível ${test.level} e agora está no nível ${nextLevel}.`,
         });
       } else {
-        if (!canReachAverage(totalScore)) {
+        if (!canReachAverage(totalScore, answeredCount) || answeredCount === 5) {
+          // Finzalizar o teste se não for possível atingir a média ou se já tiver respondido 5 questões
           await prisma.test.update({
             where: { id: testId },
             data: { score: currentAverage, finishedAt: new Date() },
@@ -196,6 +194,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Enviar mais 2 questões
     const additionalQuestions = await prisma.question.findMany({
       where: {
         subject: test.subject,
@@ -203,7 +202,7 @@ export async function POST(request: NextRequest) {
         id: { notIn: allAnswers.map((a) => a.questionId) },
       },
       include: { options: true },
-      take: 1,
+      take: 2,
     });
 
     if (additionalQuestions.length === 0) {

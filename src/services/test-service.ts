@@ -1,3 +1,4 @@
+import { TestData } from "@/app/teste/[testId]/page"
 import { GenerateTestDTO, SubmitAnswersDTO } from "@/types/dtos"
 
 export class TestService {
@@ -35,7 +36,7 @@ export class TestService {
     return response.json()
   }
 
-  static async getTestById(id: string) {
+  static async getTestById(id: string): Promise<TestData> {
     const response = await fetch(`/api/tests/${id}`)
     if (!response.ok) {
       throw new Error("Erro ao buscar teste")

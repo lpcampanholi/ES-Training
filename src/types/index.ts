@@ -64,9 +64,3 @@ export interface FrontendQuestion {
   level: Level
   options: FrontendOption[]
 }
-
-export interface TestData {
-  testId: string
-  questions: FrontendQuestion[]
-  currentLevel: Level
-}
