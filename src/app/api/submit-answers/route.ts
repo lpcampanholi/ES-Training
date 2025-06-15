@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import type { Level } from "@prisma/client";
 import { SubmitAnswersDTO } from "@/types/dtos";
 import { getNextLevel } from "@/utils";
+import { updateLeadAfterTest } from "../leads/update-lead-after-test";
 
 const AVERAGE = 8.0;
 
@@ -12,26 +13,6 @@ function canReachAverage(currentSum: number, currentCount: number): boolean {
 
 function getRecommendedLevel(average: number, currentLevel: Level): Level {
   return average >= AVERAGE ? getNextLevel(currentLevel) : currentLevel;
-}
-
-async function updateLeadAfterTest(testId: string, level: Level, subject: string, score: number) {
-  const test = await prisma.test.findUnique({
-    where: { id: testId },
-    include: { lead: true },
-  });
-
-  if (test?.leadId) {
-    await prisma.lead.update({
-      where: { id: test.leadId },
-      data: {
-        testLevel: level,
-        testSubject: subject as any,
-        fromTest: true,
-        stage: "PENDENTE",
-        observations: `Teste finalizado com nota ${score.toFixed(1).replace(".", ",")}`,
-      },
-    });
-  }
 }
 
 export async function POST(request: NextRequest) {

@@ -142,7 +142,7 @@ export default function RegistroPage({
 
             <div className="space-y-2">
               <Label htmlFor="phone" className="text-neutral-700">
-                Telefone
+                WhatsApp
               </Label>
               <div className="relative">
                 <div className="absolute left-3 top-3 text-slate-400">

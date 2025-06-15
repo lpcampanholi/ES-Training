@@ -39,6 +39,13 @@ _________________
 07/06 - 4h
 08/06 - 6h
 
+Entrega do teste funcionando
+_________________
+
+Começo da integração com WhatsApp
+
+15/06 - 2h
+
 ## Níveis
 
 - Fundamental

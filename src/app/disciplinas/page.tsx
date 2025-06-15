@@ -10,7 +10,7 @@ export default function DisciplinasPage() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-[#005345]">
-      <div className="w-full max-w-4xl p-8 bg-white rounded-2xl min-h-[85vh] shadow-sm flex flex-col justify-center">
+      <div className="w-full max-w-4xl p-8 bg-white rounded-2xl shadow-sm flex flex-col justify-center">
         {/* <Link href="/" className="inline-flex items-center text-[#005345] hover:text-[#3e9b8c] mb-6 transition-colors">
           <ArrowLeft className="w-4 h-4 mr-2" />
           Voltar
